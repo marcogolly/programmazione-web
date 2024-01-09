@@ -1,17 +1,13 @@
+<!-- FILEPATH: /c:/Users/marco/Documents/GitHub/ProgWeb/app/public/index.html -->
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Page</title>
+    <title>Landing Page</title>
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="api/login" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        
-        <input type="submit" value="Login">
+    <h1>Welcome to the Landing Page</h1>
+    <button onclick="window.location.href='api/auth/signin'">Login</button>
+    <button onclick="window.location.href='api/auth/signup'">Register</button>
 </body>
 </html>

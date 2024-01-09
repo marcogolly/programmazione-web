@@ -16,8 +16,11 @@ app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/public/index.html`);
 });
 
+app.get('/api/auth/signin', async (req, res)=>{
+    res.sendFile(`${__dirname}/public/login.html`);
+})
 
-app.post('/api/login', async (req, res) => {  	
+app.post('/api/auth/signin', async (req, res) => {  	
     const client = new MongoClient(uri);
     try {
         await client.connect();
@@ -37,6 +40,32 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+app.get('/api/auth/signup', async (req, res)=>{
+    res.sendFile(`${__dirname}/public/register.html`);
+})
+
+app.post('/api/auth/signup', async (req, res) => {  	
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        console.log('Connected successfully to MongoDB');
+
+        const databaseName = 'users';
+        const db = client.db(databaseName);
+        const collection = db.collection('users');
+        const user = {username: req.body.username, name: req.body.name, surname: req.body.surname, password: req.body.password} 
+        const asdasd = await collection.insertOne(user);
+        console.log('User inserted successfully:', asdasd.insertedId);
+
+        res.redirect('/api/auth/signin');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Errore del server");
+    } finally {
+        await client.close();
+    }
+});
+
 function verify(req, res, next){
     if(req.session.user){
         next();
@@ -46,11 +75,11 @@ function verify(req, res, next){
 }
 
 app.get('/api/restricted', verify, (req, res) => {
-    //res.json(req.session.user);
-    res.sendFile(`${__dirname}/public/login.html`);
+    res.json(req.session.user);
 });
 
-app.get('/api/restricted2', verify, (req, res) => {
-    
+app.get('/api/budget/:id', verify, async (req, res) => {
+
+    res.sendFile(`${__dirname}/public/budget.html`);
 });
 app.listen(3000);
