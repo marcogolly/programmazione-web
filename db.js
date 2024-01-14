@@ -18,7 +18,7 @@ try {
             // Insert sample users into the "users" collection
             const users = [
                 {
-                    username: 'asd',
+                    username: 'user1',
                     name: 'asd',
                     surname: 'asd',
                     password: 'asd'

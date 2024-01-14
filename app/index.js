@@ -13,12 +13,9 @@ app.use(session({
 
 // Serve index.html as the landing page
 app.get('/', (req, res) => {
-    res.sendFile(`${__dirname}/public/index.html`);
+    res.send(`nodejs running correctly`);
 });
 
-app.get('/api/auth/signin', async (req, res)=>{
-    res.sendFile(`${__dirname}/public/login.html`);
-})
 
 app.post('/api/auth/signin', async (req, res) => {  	
     const client = new MongoClient(uri);
@@ -28,7 +25,7 @@ app.post('/api/auth/signin', async (req, res) => {
         const db_user = await users.collection("users").findOne({username: req.body.username});
         if(db_user && db_user.password === req.body.password){
             req.session.user = db_user;
-            res.redirect('/api/restricted');
+            res.redirect('/api/budget');
         } else {
             res.status(403).send("Non autenticato!");
         }
@@ -39,10 +36,6 @@ app.post('/api/auth/signin', async (req, res) => {
         await client.close();
     }
 });
-
-app.get('/api/auth/signup', async (req, res)=>{
-    res.sendFile(`${__dirname}/public/register.html`);
-})
 
 app.post('/api/auth/signup', async (req, res) => {  	
     const client = new MongoClient(uri);
@@ -74,12 +67,46 @@ function verify(req, res, next){
     }
 }
 
-app.get('/api/restricted', verify, (req, res) => {
-    res.json(req.session.user);
+app.get('/api/budget', verify, async (req, res) => {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        console.log('Connected successfully to MongoDB');
+
+        const databaseName = 'transactions';
+        const db = client.db(databaseName);
+        const collection = db.collection(databaseName);
+        
+        const user = req.session.user.username; // Get the username of the current user
+        const transactions = await collection.find({ [`users.${user}`]: { $exists: true } }).toArray();
+        // Find transactions where the user exists in the "users" field
+        
+        res.json(transactions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Errore del server");
+    } finally {
+        await client.close();
+    }
 });
 
 app.get('/api/budget/:id', verify, async (req, res) => {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        console.log('Connected successfully to MongoDB');
 
-    res.sendFile(`${__dirname}/public/budget.html`);
+        const databaseName = 'transactions';
+        const db = client.db(databaseName);
+        const collection = db.collection(databaseName);
+        const transactions = await collection.find();
+        res.json(transactions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Errore del server");
+    } finally {
+        await client.close();
+    }
+
 });
 app.listen(3000);
