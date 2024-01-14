@@ -107,6 +107,62 @@ app.get('/api/budget/:id', verify, async (req, res) => {
     } finally {
         await client.close();
     }
+app.get('/api/budget', verify, async (req, res) => {
 
 });
+app.get('/api/budget/:year', verify, async (req, res) => {
+
+    res.send("todo");
+});
+app.get('/api/budget/:year/:month', verify, async (req, res) => {
+
+        res.send("todo");
+});
+app.get('/api/budget/:year/:month/:id', verify, async (req, res) => {
+
+        res.send("todo");
+
+});
+app.post('/api/budget/:year/:month', verify, async (req, res) => {
+
+        res.send("todo");
+
+});
+app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
+
+        res.send("todo");
+
+});
+app.delete('/api/budget/:year/:month/:id', verify, async (req, res) => {
+
+        res.send("todo");
+
+});
+app.get('/api/budget', verify, async (req, res) => {
+
+        res.send("todo");
+
+});
+app.get('/api/budget/:id', verify, async (req, res) => {
+
+        res.send("todo");
+
+});
+app.get('/api/budget/search?q=query', verify, async (req, res) => {
+
+        res.send("todo");
+
+});
+app.get('/api/budget/whoami', verify, async (req, res) => {
+    
+        res.send("todo");
+
+});
+app.get('/api/users/search?q=query', verify, async (req, res) => {
+
+        res.send("todo");
+
+});
+
+
 app.listen(3000);
