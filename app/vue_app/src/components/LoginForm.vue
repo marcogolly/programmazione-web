@@ -1,22 +1,16 @@
 <template>
     <div>
-        <h1>User Registration</h1>
-        
-        <form @submit="registerUser">
+        <h1>Login</h1>
+        <form @submit.prevent="login">
             <label for="username">Username:</label>
             <input type="text" id="username" v-model="username" required><br><br>
-            
-            <label for="name">Name:</label>
-            <input type="text" id="name" v-model="name" required><br><br>
-            
-            <label for="surname">Surname:</label>
-            <input type="text" id="surname" v-model="surname" required><br><br>
             
             <label for="password">Password:</label>
             <input type="password" id="password" v-model="password" required><br><br>
             
-            <input type="submit" value="Register">
+            <input type="submit" value="Login">
         </form>
+        feedback: {{ feedback }}
     </div>
 </template>
 
@@ -25,37 +19,41 @@ export default {
     data() {
         return {
             username: '',
-            name: '',
-            surname: '',
-            password: ''
+            password: '',
+            feedback: ''
         }
     },
     methods: {
-        async registerUser() {
+        async login() {
             try {
-                const response = await fetch('/api/auth/signup', {
+                const response = await fetch('http://localhost:3000/api/auth/signin', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         username: this.username,
-                        name: this.name,
-                        surname: this.surname,
                         password: this.password
                     })
                 });
                 
                 if (response.ok) {
-                    // Registration successful, redirect to login
-                    this.$router.push('/login');
+                    this.$router.push('/BudgetPage'); // Route to the login page
                 } else {
-                    // Registration failed, handle error
+                    this.feedback = 'login not successful';
+
+                    // login failed, handle error
                 }
             } catch (error) {
+                console.log(error);
                 // Handle error
             }
         }
+        
     }
-}
+};
 </script>
+
+<style>
+/* Add any necessary styles here */
+</style>

@@ -11,7 +11,12 @@ try {
         // Get the database object
         const db = client.db('users');
 
-        // Create the "users" collection
+        if(db.collection('users') != null){
+            await db.dropCollection('users');
+        }
+        if(db.collection('transactions') != null){
+            await db.dropCollection('transactions');
+        }
         await db.createCollection('users');
         await db.createCollection('transactions');
         console.log('Collection "users" created successfully');

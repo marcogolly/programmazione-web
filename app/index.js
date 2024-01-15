@@ -3,12 +3,24 @@ const { MongoClient } = require('mongodb');
 const session = require('express-session');
 const uri = "mongodb://mongohost";
 const app = express();
+const cors = require('cors');
 
 app.use(express.static(`${__dirname}/public`));
 app.use(express.urlencoded());
+app.use(express.json());
 app.use(session({
     secret: 'segreto',
-    resave: false
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: false, // set this to false in development
+        httpOnly: false, // set this to false in development
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+    }
+}));
+app.use(cors({
+    origin: 'http://localhost:8080',
+    credentials: true,
 }));
 
 // Serve index.html as the landing page
@@ -17,7 +29,7 @@ app.get('/', (req, res) => {
 });
 
 
-app.post('/api/auth/signin', async (req, res) => {  	
+app.post('/api/auth/signin', async (req, res) => {
     const client = new MongoClient(uri);
     try {
         await client.connect();
@@ -25,7 +37,8 @@ app.post('/api/auth/signin', async (req, res) => {
         const db_user = await users.collection("users").findOne({username: req.body.username});
         if(db_user && db_user.password === req.body.password){
             req.session.user = db_user;
-            res.redirect('/api/budget');
+            req.session.authorized = true;
+            res.json(db_user);
         } else {
             res.status(403).send("Non autenticato!");
         }
@@ -33,6 +46,13 @@ app.post('/api/auth/signin', async (req, res) => {
         console.error(error);
         res.status(500).send("Errore del server");
     } finally {
+        console.log('SASSISASSI');
+        console.log('SASSISASSI');
+        console.log('SASSISASSI');
+        console.log(req.session.user);
+        console.log('SASSISASSI');
+        console.log('SASSISASSI');
+        console.log('SASSISASSI');
         await client.close();
     }
 });
@@ -48,9 +68,9 @@ app.post('/api/auth/signup', async (req, res) => {
         const collection = db.collection('users');
         const user = {username: req.body.username, name: req.body.name, surname: req.body.surname, password: req.body.password} 
         const asdasd = await collection.insertOne(user);
-        console.log('User inserted successfully:', asdasd.insertedId);
 
-        res.redirect('/api/auth/signin');
+        res.json(user);
+
     } catch (error) {
         console.error(error);
         res.status(500).send("Errore del server");
@@ -68,6 +88,7 @@ function verify(req, res, next){
 }
 
 app.get('/api/budget', verify, async (req, res) => {
+
     const client = new MongoClient(uri);
     try {
         await client.connect();
@@ -107,6 +128,8 @@ app.get('/api/budget/:id', verify, async (req, res) => {
     } finally {
         await client.close();
     }
+});
+
 app.get('/api/budget', verify, async (req, res) => {
 
 });

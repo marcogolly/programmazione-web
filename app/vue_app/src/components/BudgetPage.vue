@@ -13,7 +13,7 @@
             </thead>
 
             <tbody>
-                <tr v-for="tran in transactions" :key="tran.id">
+                <tr v-for="tran in this.transactions" :key="tran.id">
                     <td>{{ tran.date }}</td>
                     <td>{{ tran.desc }}</td>
                     <td>{{ tran.cat }}</td>
@@ -36,15 +36,23 @@ export default {
         this.getTransactions();
     },
     methods: {
-        getTransactions() {
-            fetch(`/api/budget`)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.transactions = data;
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+        async getTransactions() {
+            const response = await fetch('http://localhost:3000/api/budget', {
+                headers:{
+                    'content-type': 'application/json'
+                },
+                credentials: 'include'
+
+            })
+            console.log(response);
+            if (response.ok) {
+                this.transactions = await response.json();
+                // Handle successful login
+                console.log('Login success:', this.transactions);
+            } else {
+                // Handle failed login
+                console.log('Login failed');
+            }
         },
     },
 };

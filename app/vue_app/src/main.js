@@ -1,28 +1,21 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-
-createApp(App).mount('#app')
-
-/*
-import { createApp } from 'vue';
+import {createApp} from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import Budget from './budget.vue';
-import Login from './login.vue';
-import Register from './register.vue';
-import Home from './index.vue';
+import App from './App.vue';
+import IndexPage from './components/IndexPage.vue'
+import RegisterForm from './components/RegisterForm.vue'
+import LoginForm from './components/LoginForm.vue'
+import BudgetPage from './components/BudgetPage.vue'
 
-const app = createApp({});
+const routes = [
+  { path: '/LoginForm', component: LoginForm },
+  { path: '/RegisterForm', component: RegisterForm },
+  { path: '/BudgetPage', component: BudgetPage },
+  { path: '/', component: IndexPage },
+];
+
 const router = createRouter({
   history: createWebHistory(),
-  routes: [
-    { path: '/', component: Home },
-    { path: '/login', component: Login },
-    { path: '/register', component: Register },
-    { path: '/budget', component: Budget },
-  ],
+  routes,
 });
 
-app.use(router);
-app.mount('#app');
-
-*/
+createApp(App).use(router).mount('#app');
