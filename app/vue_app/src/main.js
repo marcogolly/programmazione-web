@@ -5,7 +5,7 @@ import IndexPage from './components/IndexPage.vue'
 import RegisterForm from './components/RegisterForm.vue'
 import LoginForm from './components/LoginForm.vue'
 import BudgetPage from './components/BudgetPage.vue'
-
+//import store from './store';
 const routes = [
   { path: '/LoginForm', component: LoginForm },
   { path: '/RegisterForm', component: RegisterForm },
@@ -17,5 +17,6 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-
-createApp(App).use(router).mount('#app');
+const app = createApp(App);
+//app.use(store);
+app.use(router).mount('#app');

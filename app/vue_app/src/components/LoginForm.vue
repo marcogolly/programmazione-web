@@ -38,7 +38,11 @@ export default {
                 });
                 
                 if (response.ok) {
-                    this.$router.push('/BudgetPage'); // Route to the login page
+                    const user = await response.json();
+                    this.feedback = JSON.stringify(user);
+                    this.$emit('login', user); // Emit the login event
+                    //this.$store.dispatch('loginUser', user);
+                    //this.$router.push('/BudgetPage'); // Route to the login page
                 } else {
                     this.feedback = 'login not successful';
 

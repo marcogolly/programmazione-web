@@ -26,6 +26,7 @@
 </template>
 
 <script type="text/jsx">
+
 export default {
     data() {
         return {
