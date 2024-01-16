@@ -14,10 +14,10 @@
 
             <tbody>
                 <tr v-for="tran in this.transactions" :key="tran.id">
-                    <td>{{ tran.date }}</td>
+                    <td>{{ new Date(tran.data).toLocaleDateString('it-IT') }}</td>
                     <td>{{ tran.desc }}</td>
                     <td>{{ tran.cat }}</td>
-                    <td>{{ tran.cost }}</td>
+                    <td>{{ tran.costo }}</td>
                     <td>{{ tran.users }}</td>
                 </tr>
             </tbody>
@@ -26,7 +26,7 @@
 </template>
 
 <script type="text/jsx">
-
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -38,22 +38,16 @@ export default {
     },
     methods: {
         async getTransactions() {
-            const response = await fetch('http://localhost:3000/api/budget', {
-                headers:{
-                    'content-type': 'application/json'
-                },
-                credentials: 'include'
+            
+            const response = await axios.get('api/budget', {
+                withCredentials: true, // Include credentials (cookies) in the request
+            });
+            console.log("sassi");
+            console.log(response.data);
+            console.log("sassi");
+            
+            this.transactions = response.data;
 
-            })
-            console.log(response);
-            if (response.ok) {
-                this.transactions = await response.json();
-                // Handle successful login
-                console.log('Login success:', this.transactions);
-            } else {
-                // Handle failed login
-                console.log('Login failed');
-            }
         },
     },
 };

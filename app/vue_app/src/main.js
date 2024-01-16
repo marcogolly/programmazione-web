@@ -5,6 +5,7 @@ import IndexPage from './components/IndexPage.vue'
 import RegisterForm from './components/RegisterForm.vue'
 import LoginForm from './components/LoginForm.vue'
 import BudgetPage from './components/BudgetPage.vue'
+import './axios'
 //import store from './store';
 const routes = [
   { path: '/LoginForm', component: LoginForm },

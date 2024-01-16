@@ -15,6 +15,8 @@
 </template>
 
 <script type="text/jsx">
+
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -25,37 +27,26 @@ export default {
     },
     methods: {
         async login() {
-            try {
-                const response = await fetch('http://localhost:3000/api/auth/signin', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        username: this.username,
-                        password: this.password
-                    })
-                });
-                
-                if (response.ok) {
-                    const user = await response.json();
-                    this.feedback = JSON.stringify(user);
-                    this.$emit('login', user); // Emit the login event
-                    //this.$store.dispatch('loginUser', user);
-                    //this.$router.push('/BudgetPage'); // Route to the login page
-                } else {
-                    this.feedback = 'login not successful';
-
-                    // login failed, handle error
+            await axios.post('api/auth/signin', {
+                    username: this.username,
+                    password: this.password
+            }, {
+                    withCredentials: true, // Include credentials (cookies) in the request
+                })
+            .then(
+                res=> {
+                    console.log(res);
+                    this.feedback =res;
+                    this.$router.push('/BudgetPage');
                 }
-            } catch (error) {
-                console.log(error);
-                // Handle error
-            }
+                )
+                .catch (error=> { 
+                    console.log(error);
+                });
+            
         }
-        
     }
-};
+}
 </script>
 
 <style>

@@ -46,13 +46,7 @@ app.post('/api/auth/signin', async (req, res) => {
         console.error(error);
         res.status(500).send("Errore del server");
     } finally {
-        console.log('SASSISASSI');
-        console.log('SASSISASSI');
-        console.log('SASSISASSI');
-        console.log(req.session.user);
-        console.log('SASSISASSI');
-        console.log('SASSISASSI');
-        console.log('SASSISASSI');
+
         await client.close();
     }
 });
@@ -80,6 +74,7 @@ app.post('/api/auth/signup', async (req, res) => {
 });
 
 function verify(req, res, next){
+
     if(req.session.user){
         next();
     } else {
@@ -95,13 +90,21 @@ app.get('/api/budget', verify, async (req, res) => {
         console.log('Connected successfully to MongoDB');
 
         const databaseName = 'transactions';
-        const db = client.db(databaseName);
+        const db = client.db('users');
         const collection = db.collection(databaseName);
         
         const user = req.session.user.username; // Get the username of the current user
-        const transactions = await collection.find({ [`users.${user}`]: { $exists: true } }).toArray();
+        const transactions = await collection.find({
+            "users": {
+                $elemMatch: {
+                    "user": user
+                }
+            }
+        }).toArray();
         // Find transactions where the user exists in the "users" field
         
+
+        console.log(transactions);
         res.json(transactions);
     } catch (error) {
         console.error(error);
