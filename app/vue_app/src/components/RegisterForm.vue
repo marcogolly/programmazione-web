@@ -35,6 +35,7 @@ export default {
             registrationStatus: '',
         }
     },
+    
     methods: {
         async registerUser() {
             try {

@@ -127,9 +127,7 @@ app.get('/api/budget/:year', verify, async (req, res) => {
                     "user": user
                 }
             },
-            $expr: {
-                $eq: [{ $year: { $toDate: "$data" } }, parseInt(req.params.year)]
-            }
+            "year": parseInt(req.params.year),
         }).toArray();
         // Find transactions where the user exists in the "users" field
         
@@ -143,22 +141,131 @@ app.get('/api/budget/:year', verify, async (req, res) => {
 });
 app.get('/api/budget/:year/:month', verify, async (req, res) => {
 
-        res.send("todo");
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+
+        const databaseName = 'transactions';
+        const db = client.db('users');
+        const collection = db.collection(databaseName);
+        
+        const user = req.session.user.username; // Get the username of the current user
+        const transactions = await collection.find({
+            "users": {
+                $elemMatch: {
+                    "user": user
+                }
+            },
+            "year": parseInt(req.params.year),
+            "month": parseInt(req.params.month)
+        }).toArray();
+        // Find transactions where the user exists in the "users" field
+        
+        res.json(transactions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Errore del server");
+    } finally {
+        await client.close();
+    }
 });
 app.get('/api/budget/:year/:month/:id', verify, async (req, res) => {
 
-        res.send("todo");
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+
+        const databaseName = 'transactions';
+        const db = client.db('users');
+        const collection = db.collection(databaseName);
+        
+        const user = req.session.user.username; // Get the username of the current user
+        const transactions = await collection.find({
+            "users": {
+                $elemMatch: {
+                    "user": user
+                }
+            },
+            "year": parseInt(req.params.year),
+            "month": parseInt(req.params.month),
+            //"_id":req.params.id
+        }).toArray();
+        // Find transactions where the user exists in the "users" field
+        
+        res.json(transactions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Errore del server");
+    } finally {
+        await client.close();
+    }
 
 });
 app.post('/api/budget/:year/:month', verify, async (req, res) => {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
 
-        res.send("todo");
-
+        const databaseName = 'transactions';
+        const db = client.db('users');
+        const collection = db.collection(databaseName);
+        
+        const user = req.session.user.username; // Get the username of the current user
+        const newTransaction = req.body; // Get the new transaction data from the request body
+        
+        // Add the user to the "users" field of the new transaction
+        newTransaction.users = [{ user }];
+        
+        // Set the year and month of the new transaction
+        newTransaction.year = parseInt(req.params.year);
+        newTransaction.month = parseInt(req.params.month);
+        
+        // Insert the new transaction into the collection
+        await collection.insertOne(newTransaction);
+        
+        res.send("Transaction added successfully");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    } finally {
+        await client.close();
+    }
 });
 app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
 
-        res.send("todo");
-
+        const databaseName = 'transactions';
+        const db = client.db('users');
+        const collection = db.collection(databaseName);
+        
+        const user = req.session.user.username; // Get the username of the current user
+        const updatedTransaction = req.body; // Get the updated transaction data from the request body
+        
+        await collection.updateOne(
+            {
+                "users": {
+                    $elemMatch: {
+                        "user": user
+                    }
+                },
+                "year": parseInt(req.params.year),
+                "month": parseInt(req.params.month),
+                "_id": req.params.id
+            },
+            {
+                $set: updatedTransaction
+            }
+        );
+        
+        res.send("Transaction updated successfully");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    } finally {
+        await client.close();
+    }
 });
 app.delete('/api/budget/:year/:month/:id', verify, async (req, res) => {
 
@@ -180,10 +287,19 @@ app.get('/api/budget/search?q=query', verify, async (req, res) => {
         res.send("todo");
 
 });
-app.get('/api/budget/whoami', verify, async (req, res) => {
+app.get('/api/budget/whoami', async (req, res) => {
+    console.log("ASDASDASD");
+    console.log("ASDASDASD");
+    console.log("ASDASDASD");
+    console.log("ASDASDASD");
+    console.log("ASDASDASD");
+    console.log("ASDASDASD");
+    if(req.session.user)
+        res.json(req.session.user);
+    else
+        res.status(200).json('not authenticated');
+        
     
-        res.send("todo");
-
 });
 app.get('/api/users/search?q=query', verify, async (req, res) => {
 
