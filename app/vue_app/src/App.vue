@@ -1,6 +1,16 @@
 <template>
-  <h1> hi</h1>
-  <RouterView :session="session" @login = "login" @logout = "logout"></RouterView>
+  <div>
+        <nav>
+            <ul>
+                <li @click="navigateTo('/')">Home</li>
+                <li @click="navigateTo('LoginForm')">Login</li>
+                <li @click="navigateTo('RegisterForm')">Register</li>
+                <li @click="navigateTo('BudgetPage')">Budget</li>
+
+            </ul>
+        </nav>
+    </div>
+  <RouterView :session="session"></RouterView>
 </template>
 
 <script>
@@ -19,12 +29,18 @@ export default {
       session.value = null;
     };
 
+
     return {
       session,
       login,
       logout,
     };
   },
+  methods: {
+        navigateTo(component) {
+            this.$router.push(component);
+        },
+    },
 };
 
 </script>

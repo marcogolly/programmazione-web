@@ -61,7 +61,7 @@ export default {
                 
                 
             } catch (error) {
-                //console.log(error);
+                console.log(error);
                 this.registrationStatus = 'Registration not successful';
                 // Handle error
             }

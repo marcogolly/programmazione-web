@@ -35,7 +35,6 @@ export default {
                 })
             .then(
                 res=> {
-                    console.log(res);
                     this.feedback =res;
                     this.$router.push('/BudgetPage');
                 }

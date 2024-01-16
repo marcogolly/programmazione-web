@@ -6,7 +6,6 @@ const client = new MongoClient(url);
 
 try {
     await client.connect();
-    console.log('Connected successfully to MongoDB');
 
         // Get the database object
         const db = client.db('users');

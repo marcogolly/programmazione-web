@@ -1,6 +1,8 @@
 <template>
     <div>
         <h1>transactions</h1>
+        <input id="year" v-model="year"/>
+        <button @click="byYear">byyear</button>
         <table>
             <thead>
                 <tr>
@@ -31,6 +33,7 @@ export default {
     data() {
         return {
             transactions: null,
+            year: '',
         };
     },
     mounted() {
@@ -42,13 +45,17 @@ export default {
             const response = await axios.get('api/budget', {
                 withCredentials: true, // Include credentials (cookies) in the request
             });
-            console.log("sassi");
-            console.log(response.data);
-            console.log("sassi");
             
             this.transactions = response.data;
 
         },
+        async byYear() {
+            const response = await axios.get('api/budget/'+this.year, {
+                withCredentials: true, // Include credentials (cookies) in the request
+            });
+            
+            this.transactions = response.data;
+        }
     },
 };
 </script>

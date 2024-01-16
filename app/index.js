@@ -55,7 +55,6 @@ app.post('/api/auth/signup', async (req, res) => {
     const client = new MongoClient(uri);
     try {
         await client.connect();
-        console.log('Connected successfully to MongoDB');
 
         const databaseName = 'users';
         const db = client.db(databaseName);
@@ -83,11 +82,9 @@ function verify(req, res, next){
 }
 
 app.get('/api/budget', verify, async (req, res) => {
-
     const client = new MongoClient(uri);
     try {
         await client.connect();
-        console.log('Connected successfully to MongoDB');
 
         const databaseName = 'transactions';
         const db = client.db('users');
@@ -103,8 +100,6 @@ app.get('/api/budget', verify, async (req, res) => {
         }).toArray();
         // Find transactions where the user exists in the "users" field
         
-
-        console.log(transactions);
         res.json(transactions);
     } catch (error) {
         console.error(error);
@@ -114,16 +109,30 @@ app.get('/api/budget', verify, async (req, res) => {
     }
 });
 
-app.get('/api/budget/:id', verify, async (req, res) => {
+
+app.get('/api/budget/:year', verify, async (req, res) => {
+
     const client = new MongoClient(uri);
     try {
         await client.connect();
-        console.log('Connected successfully to MongoDB');
 
         const databaseName = 'transactions';
-        const db = client.db(databaseName);
+        const db = client.db('users');
         const collection = db.collection(databaseName);
-        const transactions = await collection.find();
+        
+        const user = req.session.user.username; // Get the username of the current user
+        const transactions = await collection.find({
+            "users": {
+                $elemMatch: {
+                    "user": user
+                }
+            },
+            $expr: {
+                $eq: [{ $year: { $toDate: "$data" } }, parseInt(req.params.year)]
+            }
+        }).toArray();
+        // Find transactions where the user exists in the "users" field
+        
         res.json(transactions);
     } catch (error) {
         console.error(error);
@@ -131,14 +140,6 @@ app.get('/api/budget/:id', verify, async (req, res) => {
     } finally {
         await client.close();
     }
-});
-
-app.get('/api/budget', verify, async (req, res) => {
-
-});
-app.get('/api/budget/:year', verify, async (req, res) => {
-
-    res.send("todo");
 });
 app.get('/api/budget/:year/:month', verify, async (req, res) => {
 
