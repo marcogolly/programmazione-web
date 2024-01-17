@@ -7,6 +7,7 @@ import LoginForm from './components/LoginForm.vue'
 import BudgetPage from './components/BudgetPage.vue'
 import UpdateTransaction from './components/UpdateTransaction.vue'
 import AddTransaction from './components/AddTransaction.vue'
+import BalancePage from './components/BalancePage.vue'
 
 import './axios'
 //import store from './store';
@@ -14,9 +15,10 @@ const routes = [
   { path: '/LoginForm', component: LoginForm },
   { path: '/RegisterForm', component: RegisterForm },
   { path: '/BudgetPage', component: BudgetPage },
-  { path: '/UpdateTransaction/:year/:month/:id', component: UpdateTransaction },
+  { path: '/BudgetPage/UpdateTransaction/:id', component: UpdateTransaction },
   { path: '/AddTransaction', component: AddTransaction },
 
+  { path: '/BalancePage', component: BalancePage },
   { path: '/', component: IndexPage },
 ];
 

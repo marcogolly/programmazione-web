@@ -3,9 +3,10 @@
         <nav>
             <ul>
                 <li @click="navigateTo('/')">Home</li>
-                <li @click="navigateTo('LoginForm')">Login</li>
-                <li @click="navigateTo('RegisterForm')">Register</li>
-                <li @click="navigateTo('BudgetPage')">Budget</li>
+                <li @click="navigateTo('/LoginForm')">Login</li>
+                <li @click="navigateTo('/RegisterForm')">Register</li>
+                <li @click="navigateTo('/BudgetPage')">Budget</li>
+                <li @click="navigateTo('/BalancePage')">Balance</li>
 
             </ul>
         </nav>

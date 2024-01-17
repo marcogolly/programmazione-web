@@ -1,12 +1,9 @@
 <template>
-    <div>
+    <h1>Update Transaction</h1>
     <form @submit.prevent="updateTransaction">
-                                    <h1>Update Transaction</h1>
-                                    <label for="year">Year:</label>
-            <input id="year" v-model="transaction.year" />
-            <label for="month">Month:</label>
-            <input id="month" v-model="transaction.month" />
-            <label for="desc">Description:</label>
+            <label for="data">Data:</label>
+            <input id="data" v-model="transaction.data" type = "date" />
+            <label for="desc">desc:</label>
             <input id="desc" v-model="transaction.desc" />
             <label for="cat">Category:</label>
             <input id="cat" v-model="transaction.cat" />
@@ -14,8 +11,8 @@
             <input id="costo" v-model="transaction.costo" />
             <label for="users">Users:</label>
             <input id="users" v-model="transaction.users" />
-            <button type="submit">Confirm</button>                                </form>
-                                </div>
+            <button type="submit">Confirm</button>                                
+    </form>
 </template>
 
 <script>
@@ -25,12 +22,11 @@ export default {
     data() {
         return {
                 transaction: {
-                    year: '',
-                    month: '',
+                    data: '',
                     desc: '',
                     cat: '',
                     costo: '',
-                    users: ''
+                    users: [],
                 },
         };
     },
@@ -42,12 +38,15 @@ export default {
     methods: {
         async byId() {
             const id = this.$route.params.id;
-            const year = this.$route.params.year;
-            const month = this.$route.params.month;
+            const year = new Date(this.data).getFullYear();
+            const month = new Date(this.data).getMonth() + 1;
             const response = await axios.get(`api/budget/${year}/${month}/${id}`, {
                 withCredentials: true, // Include credentials (cookies) in the request
             });
             this.transaction = response.data[0];
+
+            console.log(this.transaction);
+            this.transaction.data = new Date(this.transaction.data).toISOString().substr(0, 10);
             this.transaction.users = JSON.stringify(this.transaction.users);
             console.log(this.transaction);
         },
@@ -59,7 +58,8 @@ export default {
                 withCredentials: true, // Include credentials (cookies) in the request
             });
             this.transaction = response.data;
-            console.log(this.transaction);
+            
+            this.$router.push('/BudgetPage');
         }
     },
 };

@@ -2,10 +2,8 @@
     <div>
         <form @submit.prevent="addTransaction">
             <h1>Add Transaction</h1>
-            <label for="year">Year:</label>
-            <input id="year" v-model="transaction.year" />
-            <label for="month">Month:</label>
-            <input id="month" v-model="transaction.month" />
+            <label for="data">Data:</label>
+            <input id="data" v-model="transaction.data" type = "date" />
             <label for="desc">Description:</label>
             <input id="desc" v-model="transaction.desc" />
             <label for="cat">Category:</label>
@@ -33,27 +31,36 @@ export default {
     data() {
         return {
             transaction: {
-                year: '',
-                month: '',
                 desc: '',
                 cat: '',
                 costo: '',
-                users: []
+                users: [{'':''}]
             },
         };
     },
     methods: {
         async addTransaction() {
-            const year = this.$route.params.year;
-            const month = this.$route.params.month;
+
+            // Transform the users array into an object
+            const transformedUsers = {};
+            this.transaction.users.forEach(user => {
+                transformedUsers[user.name] = user.quota;
+            });
+            this.transaction.users = transformedUsers;
+
+            this.transaction.costo=parseInt(this.transaction.costo);            
+            this.transaction.data=new Date(this.transaction.data);
+
+            const year = this.transaction.data.getFullYear();
+            const month = this.transaction.data.getMonth() + 1;
             const response = await axios.post(`api/budget/${year}/${month}`, this.transaction, {
                 withCredentials: true, // Include credentials (cookies) in the request
             });
-            this.transaction = response.data;
-            console.log(this.transaction);
+            console.log(response.data);
+            this.$router.push('/BudgetPage');
         },
         addUser() {
-            this.transaction.users.push({ name: '', quota: '' });
+            this.transaction.users.push({name: '', quota: ''});
         },
     },
 };
