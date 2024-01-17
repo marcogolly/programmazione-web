@@ -141,17 +141,18 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
 
 // Update a specific transaction for the current user
 app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const user = req.session.user.username;
-    const updatedTransaction = {
-        desc: req.body.desc,
-        data: new Date(req.body.data),
-        costo: parseInt(req.body.costo),
-        cat: req.body.cat,
-        users: JSON.parse(req.body.users),
-        
-    }
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        const user = req.session.user.username;
+        const updatedTransaction = {
+            desc: req.body.desc,
+            data: new Date(req.body.data).toISOString().split('T')[0],
+            costo: parseInt(req.body.costo),
+            cat: req.body.cat,
+            users: req.body.users,
+        }
+        console.log(updatedTransaction);
     await collection.updateOne(
         {
             _id: new ObjectId(req.params.id),
@@ -159,6 +160,10 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
         { $set: updatedTransaction }
     );
     res.send('Transaction updated successfully');
+    }catch(err){
+        console.log(err);
+        res.send('Errore')
+    }
 });
 
 // Delete a specific transaction for the current user

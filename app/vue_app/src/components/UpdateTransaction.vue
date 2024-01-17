@@ -10,7 +10,14 @@
             <label for="costo">Cost:</label>
             <input id="costo" v-model="transaction.costo" />
             <label for="users">Users:</label>
-            <input id="users" v-model="transaction.users" />
+            <div v-for="(user, index) in transaction.users" :key="index">
+                <label :for="'user-name-' + index">User Name:</label>
+                <input :id="'user-name-' + index" v-model="user.name" />
+                <label :for="'user-quota-' + index">Quota:</label>
+                <input :id="'user-quota-' + index" v-model="user.quota" />
+            </div>
+            <button type="button" @click="addUser">Add User</button>
+
             <button type="submit">Confirm</button>                                
     </form>
 </template>
@@ -26,7 +33,7 @@ export default {
                     desc: '',
                     cat: '',
                     costo: '',
-                    users: [],
+                    users: [{'':''}]
                 },
         };
     },
@@ -47,20 +54,37 @@ export default {
 
             console.log(this.transaction);
             this.transaction.data = new Date(this.transaction.data).toISOString().substr(0, 10);
-            this.transaction.users = JSON.stringify(this.transaction.users);
+            this.transaction.users = Object.keys(this.transaction.users).map(key => {
+                return { name: key, quota: this.transaction.users[key] };
+            });
             console.log(this.transaction);
         },
         async updateTransaction(){
+
+            const updatedTransaction = { ...this.transaction };
+            updatedTransaction.users = {};
+            this.transaction.users.forEach(user => {
+                updatedTransaction.users[user.name] = user.quota;
+            });
+
+            updatedTransaction.costo=parseInt(updatedTransaction.costo);            
+            updatedTransaction.data = new Date(updatedTransaction.data).toISOString().split('T')[0];
+
             const id = this.$route.params.id;
             const year = this.$route.params.year;
             const month = this.$route.params.month;
-            const response = await axios.put(`api/budget/${year}/${month}/${id}`, this.transaction, {
+
+            console.log(updatedTransaction);
+            const response = await axios.put(`api/budget/${year}/${month}/${id}`, updatedTransaction, {
                 withCredentials: true, // Include credentials (cookies) in the request
             });
-            this.transaction = response.data;
+            console.log(response.data);
             
             this.$router.push('/BudgetPage');
-        }
+        },
+        addUser() {
+            this.transaction.users.push({name: '', quota: ''});
+        },
     },
 };
 </script>
