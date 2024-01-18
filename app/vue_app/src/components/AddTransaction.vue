@@ -22,10 +22,12 @@
             <button type="submit">Confirm</button>
         </form>
     </div>
+    <p> {{ error }} </p>  
 </template>
 
 <script>
 import axios from 'axios';
+import {formatTransaction} from '../assets/utils.js';
 export default {
     name: 'AddTransaction',
     data() {
@@ -34,25 +36,23 @@ export default {
                 desc: '',
                 cat: '',
                 costo: '',
-                users: [{'':''}]
+                users: [],
             },
+            errore: '',
         };
+    },
+    mounted() {
+        this.addUser();
     },
     methods: {
         async addTransaction() {
             try {
-                // Transform the users array into an object
-                const newTransaction = { ...this.transaction };
-                
-                newTransaction.users.forEach(user => {
-                    newTransaction[user.name] = user.quota;
-                });
-
-                newTransaction.costo=parseInt(newTransaction.costo);            
-                newTransaction.data=new Date(newTransaction.data);
+                let newTransaction = await formatTransaction(this.transaction);
+                console.log(newTransaction);
 
                 const year = newTransaction.data.getFullYear();
                 const month = newTransaction.data.getMonth() + 1;
+
                 const response = await axios.post(`api/budget/${year}/${month}`, newTransaction, {
                     withCredentials: true,
                 });

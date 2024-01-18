@@ -10,6 +10,9 @@ import AddTransaction from './components/AddTransaction.vue'
 import BalancePage from './components/BalancePage.vue'
 
 import './axios'
+import 'bootstrap/dist/css/bootstrap.css'
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js'
+
 //import store from './store';
 const routes = [
   { path: '/LoginForm', component: LoginForm },
@@ -28,4 +31,6 @@ const router = createRouter({
 });
 const app = createApp(App);
 //app.use(store);
-app.use(router).mount('#app');
+app.use(router)
+.use(bootstrap)    
+.mount('#app');

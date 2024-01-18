@@ -177,18 +177,20 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
             cat: req.body.cat,
             users: req.body.users,
         };
+
         
         if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === ''){
-            res.status(403).send('Compila tutti i campi');
+            throw new Error('Compila tutti i campi');
         }
         else if(transaction.users.length === 0){
-            res.status(403).send('Seleziona almeno un utente');
+            throw new Error('Seleziona almeno un utente');
         }
-        else if (transaction.users.some(user => user.quota === 0)) {
-            res.status(403).send('La quota di ogni utente deve essere diversa da 0');
+        else if (Object.values(transaction.users).some(quota => quota === 0)) {
+            throw new Error('La quota di ogni utente deve essere diversa da 0');
         }
-        else if (transaction.users.reduce((sum, user) => sum + user.quota, 0) !== transaction.costo) {
-            res.status(403).send('La somma delle quote degli utenti deve essere uguale al costo');
+        else if (Object.values(transaction.users).reduce((acc, quota) => acc + quota, 0) !== transaction.costo) {
+            console.log(transaction.users);
+            throw new Error('La somma delle quote degli utenti deve essere uguale al costo');
         }
         else{
             await collection.insertOne(transaction);
@@ -196,7 +198,7 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
         }
     }catch(err){
         console.log(err);
-        res.send('Errore');
+        res.status(403).send(err.message || 'Errore');
     }
 });
 
@@ -205,37 +207,31 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
     try{
         const db = await connectToDatabase();
         const collection = db.collection('transactions');
-        let updatedTransaction = {
+        let transaction = {
             desc: req.body.desc,
-            data: new Date(req.body.data).toISOString().split('T')[0],
+            data: new Date(req.body.data),
             costo: parseInt(req.body.costo),
             cat: req.body.cat,
             users: req.body.users,
         }
-        updatedTransaction.users = Object.fromEntries(
-            Object.entries(updatedTransaction.users).map(([username, quota]) => [
-                username,
-                parseInt(quota),
-            ])
-        );
     
-        if(updatedTransaction.desc === '' || updatedTransaction.data === '' || updatedTransaction.costo === '' || updatedTransaction.cat === ''){
+        if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === ''){
             throw new Error('Compila tutti i campi');
         }
-        else if(updatedTransaction.users.length === 0){
+        else if(transaction.users.length === 0){
             throw new Error('Seleziona almeno un utente');
         }
-        else if (Object.values(updatedTransaction.users).some(quota => quota === 0)) {
+        else if (Object.values(transaction.users).some(quota => quota === 0)) {
             throw new Error('La quota di ogni utente deve essere diversa da 0');
         }
-        else if (Object.values(updatedTransaction.users).reduce((acc, quota) => acc + quota, 0) !== updatedTransaction.costo) {
-            console.log(updatedTransaction.users);
+        else if (Object.values(transaction.users).reduce((acc, quota) => acc + quota, 0) !== transaction.costo) {
+            console.log(transaction.users);
             throw new Error('La somma delle quote degli utenti deve essere uguale al costo');
         }
         else{
             await collection.updateOne(
                 { _id: new ObjectId(req.params.id), },
-                { $set: updatedTransaction }
+                { $set: transaction }
             );
             res.send('Transaction updated successfully');
         }

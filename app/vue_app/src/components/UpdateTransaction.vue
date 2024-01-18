@@ -25,6 +25,8 @@
 
 <script>
 import axios from 'axios';
+import {formatTransaction} from '../assets/utils.js';
+
 export default {
     name: 'UpdateTransaction',
     data() {
@@ -34,7 +36,7 @@ export default {
                     desc: '',
                     cat: '',
                     costo: '',
-                    users: [{'':''}],
+                    users: [],
                 },
                 error: '',
             };
@@ -48,8 +50,8 @@ export default {
         async byId() {
             try{
                 const id = this.$route.params.id;
-                const year = new Date(this.data).getFullYear();
-                const month = new Date(this.data).getMonth() + 1;
+                const year = this.$route.params.year;
+                const month = this.$route.params.month;
                 const response = await axios.get(`api/budget/${year}/${month}/${id}`, {
                     withCredentials: true, // Include credentials (cookies) in the request
                 });
@@ -67,20 +69,13 @@ export default {
         },
         async updateTransaction(){
             try{
-                const updatedTransaction = { ...this.transaction };
-                updatedTransaction.users = {};
-
-                this.transaction.users.forEach(user => {
-                    updatedTransaction.users[user.name] = user.quota;
-                });
-                
-                console.log(updatedTransaction)
-                updatedTransaction.costo=parseInt(updatedTransaction.costo);            
-                updatedTransaction.data = new Date(updatedTransaction.data);
+                let updatedTransaction = null;
+                updatedTransaction = await formatTransaction(this.transaction);
+                console.log(updatedTransaction);
 
                 const id = this.$route.params.id;
-                const year = this.$route.params.year;
-                const month = this.$route.params.month;
+                const year = updatedTransaction.data.getFullYear();
+                const month = updatedTransaction.data.getMonth() + 1;
 
                 const response = await axios.put(`api/budget/${year}/${month}/${id}`, updatedTransaction, {
                     withCredentials: true, // Include credentials (cookies) in the request
@@ -91,7 +86,7 @@ export default {
             }
             catch(err){
                 console.log(err)
-                this.error = err.response.data.message;
+                this.error = err.response.data;
             }
         },
         addUser() {

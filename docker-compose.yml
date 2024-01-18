@@ -20,4 +20,10 @@ services:
       - "27017:27017"
   
 
+  #vue:
+    #container_name: vue
+    #build: .
+    #command: npm run serve
+    #ports:
+      #- "8080:8080"
 

@@ -1,3 +1,4 @@
+# Container for Node.js server
 FROM node:latest
 RUN mkdir -p /var/www
 WORKDIR /var/www

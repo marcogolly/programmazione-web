@@ -1,12 +1,34 @@
 <template>
     <div>
-        <h1>transactions</h1>
-        <input id="year" v-model="year"/>
-        <input id="month" v-model="month"/>
-        <button @click="byYear">byyear</button>
-        <button @click="byYearMonth">byyear and bymonth</button>
-        <input id="query" v-model="query" @keyup="autocomplete" />
-
+        <h1 class="mt-4">Transactions</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="year">Year:</label>
+                    <input id="year" class="form-control" v-model="year" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="month">Month:</label>
+                    <input id="month" class="form-control" v-model="month" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="query">Search:</label>
+                    <input id="query" class="form-control" v-model="query" @keyup="autocomplete" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <button class="btn btn-primary" @click="byYear">By Year</button>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-primary" @click="byYearMonth">By Year and Month</button>
+            </div>
+        </div>
         <div class="dropdown">
             <ul>
                 <li v-for="item in filteredItems" :key="item._id" @click="findById(item._id)">
@@ -14,7 +36,7 @@
                 </li>
             </ul>
         </div>
-        <table>
+        <table class="table">
             <thead>
                 <tr>
                     <th v-if="showDetails">Id</th>
@@ -23,7 +45,7 @@
                     <th>Category</th>
                     <th>Quota</th>
                     <th>Amount</th>
-                    <th v-if="showDetails" >Users</th>
+                    <th v-if="showDetails">Users</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,14 +59,14 @@
                     <div v-if="showDetails">
                         <td v-for="(u, key) in tran.users" :key="key">{{ key }}: {{ u }}</td>
                     </div>
-                    <td> <button @click="deleteById(tran._id)"> delete </button></td>
-                    <td> <button @click="modifyById(tran._id)"> modify </button></td>
-                    <td> <button @click="expandById(tran._id)" v-if="!showDetails"> expand </button></td>
-                    <td> <button @click="getTransactions()" v-if="showDetails"> compress </button></td>
+                    <td> <button class="btn btn-danger" @click="deleteById(tran._id)">Delete</button></td>
+                    <td> <button class="btn btn-primary" @click="modifyById(tran._id)">Modify</button></td>
+                    <td> <button class="btn btn-primary" @click="expandById(tran._id)" v-if="!showDetails">Expand</button></td>
+                    <td> <button class="btn btn-primary" @click="getTransactions()" v-if="showDetails">Compress</button></td>
                 </tr>
             </tbody>
         </table>
-        <button @click="addTran"> add</button>
+        <button class="btn btn-success" @click="addTran">Add</button>
     </div>
 </template>
 
@@ -68,7 +90,7 @@ export default {
             this.isLogged();
             this.getTransactions();
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
     },
     methods: {
@@ -81,10 +103,9 @@ export default {
 
                 this.transactions = response.data;
 
-                this.transactions.forEach(tran => {
+                this.transactions.forEach((tran) => {
                     tran.data = new Date(tran.data).toISOString().split('T')[0];
                 });
-
 
                 console.log(this.transactions);
             } catch (err) {
@@ -97,6 +118,9 @@ export default {
             });
 
             this.transactions = response.data;
+            this.transactions.forEach((tran) => {
+                tran.data = new Date(tran.data).toISOString().split('T')[0];
+            });
         },
         async byYearMonth() {
             const response = await axios.get(`api/budget/${this.year}/${this.month}`, {
@@ -104,30 +128,36 @@ export default {
             });
             console.log(response.data);
             this.transactions = response.data;
+            this.transactions.forEach((tran) => {
+                tran.data = new Date(tran.data).toISOString().split('T')[0];
+            });
         },
         async findById(id) {
             await this.getTransactions();
-            const tran = this.transactions.find(tran => tran._id === id);
-            
+            const tran = this.transactions.find((tran) => tran._id === id);
+
             this.transactions = [tran];
+            this.transactions.forEach((tran) => {
+                tran.data = new Date(tran.data).toISOString().split('T')[0];
+            });
         },
         async modifyById(id) {
-            const tran = this.transactions.find(tran => tran._id === id);
+            const tran = this.transactions.find((tran) => tran._id === id);
             console.log(tran.costo);
 
             this.$router.push('/BudgetPage/UpdateTransaction/' + id);
         },
         async expandById(id) {
-            const tran = this.transactions.find(tran => tran._id === id);
+            const tran = this.transactions.find((tran) => tran._id === id);
             this.showDetails = true;
             this.transactions = [tran];
         },
         async deleteById(id) {
-            const tran = this.transactions.find(tran => tran._id === id);
+            const tran = this.transactions.find((tran) => tran._id === id);
             tran.year = new Date(tran.data).getFullYear();
             tran.month = new Date(tran.data).getMonth() + 1;
             const response = await axios.delete(`api/budget/${tran.year}/${tran.month}/${id}`, {
-                withCredentials: true
+                withCredentials: true,
             });
             console.log(response.data);
             this.getTransactions();
@@ -140,9 +170,8 @@ export default {
             console.log(response.data);
             if (!response.data) {
                 this.$router.push('/LoginForm');
-            }
-            else{
-                this.user=response.data.username;
+            } else {
+                this.user = response.data.username;
             }
         },
         async addTran() {
@@ -153,8 +182,26 @@ export default {
                 withCredentials: true, // Include credentials (cookies) in the request
             });
             console.log(response.data);
-            this.filteredItems=response.data;
-        }
-    }
+            this.filteredItems = response.data;
+        },
+    },
 };
 </script>
+
+<style scoped>
+.row {
+    margin-bottom: 10px;
+}
+
+.dropdown {
+    margin-bottom: 10px;
+}
+
+.table {
+    margin-bottom: 10px;
+}
+
+.btn {
+    margin-right: 5px;
+}
+</style>
