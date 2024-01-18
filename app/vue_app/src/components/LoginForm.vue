@@ -10,7 +10,7 @@
             
             <input type="submit" value="Login">
         </form>
-        feedback: {{ feedback }}
+        {{ feedback }}
     </div>
 </template>
 
@@ -30,17 +30,17 @@ export default {
             await axios.post('api/auth/signin', {
                     username: this.username,
                     password: this.password
-            }, {
+                }, {
                     withCredentials: true, // Include credentials (cookies) in the request
                 })
-            .then(
-                res=> {
-                    this.feedback =res;
-                    this.$router.push('/BudgetPage');
-                }
-                )
-                .catch (error=> { 
-                    console.log(error);
+                .then(
+                    res=> {
+                        console.log(res.data);
+                        this.$router.push('/BudgetPage');
+                    }
+                    )
+                    .catch (error=> { 
+                    this.feedback =error.response.data;
                 });
             
         }

@@ -80,6 +80,12 @@ export default {
                 });
 
                 this.transactions = response.data;
+
+                this.transactions.forEach(tran => {
+                    tran.data = new Date(tran.data).toISOString().split('T')[0];
+                });
+
+
                 console.log(this.transactions);
             } catch (err) {
                 console.log(err);

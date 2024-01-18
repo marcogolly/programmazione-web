@@ -57,26 +57,33 @@ export default {
     methods: {
         async getTransactions() {
             try{
-            const response = await axios.get('api/balance', {
-                withCredentials: true, // Include credentials (cookies) in the request
-            });
+                const response = await axios.get('api/balance', {
+                    withCredentials: true, // Include credentials (cookies) in the request
+                });
             
-            this.transactions = response.data;
-            console.log(this.transactions);
+                this.transactions = response.data;
+
+                this.transactions.forEach(tran => {
+                    tran.data = new Date(tran.data).toISOString().split('T')[0];
+                });
+
             }
             catch(err){
                 console.log(err);
             } 
         },
 
-        async isLogged(){
-            //todo
-            const response = await axios.get('/api/budget/whoami',{
+        async isLogged() {
+            // todo
+            const response = await axios.get('/api/budget/whoami', {
                 withCredentials: true, // Include credentials (cookies) in the request
             });
             console.log(response.data);
-            if (!response.data){
+            if (!response.data) {
                 this.$router.push('/LoginForm');
+            }
+            else{
+                this.user=response.data.username;
             }
         },
         async byUser() {
@@ -102,6 +109,7 @@ export default {
 
             this.transactions = response.data;
         },
+        
 
     }
 };

@@ -48,16 +48,16 @@ try {
             ];
 
             const transactions = [
-                { "costo": 150, "desc": "Transaction 57", "data": new Date("2023-01-01").toISOString().split('T')[0], "cat": "Category 1", "users": { "user1": 50, "user2": 30, "user3": 70 } },
-                { "costo": 955, "desc": "Transaction 6", "data": new Date("2023-09-01").toISOString().split('T')[0], "cat": "Category 1", "users": { "user1": 318, "user2": 477, "user3": 160 } },
-                { "costo": 602, "desc": "Transaction 23", "data": new Date("2022-09-01").toISOString().split('T')[0], "cat": "Category 4", "users": { "user2": 120, "user3": 482 } },
-                { "costo": 390, "desc": "Transaction 61", "data": new Date("2023-06-01").toISOString().split('T')[0], "cat": "Category 1", "users": { "user2": 234, "user4": 78, "user3": 78 } },
-                { "costo": 141, "desc": "Transaction 61", "data": new Date("2023-05-01").toISOString().split('T')[0], "cat": "Category 2", "users": { "user2": 63, "user3": 63, "user1": 15 } },
-                { "costo": 748, "desc": "Transaction 64", "data": new Date("2023-06-01").toISOString().split('T')[0], "cat": "Category 3", "users": { "user4": 518, "user3": 148, "user2": 82 } },
-                { "costo": 156, "desc": "Transaction 81", "data": new Date("2020-08-01").toISOString().split('T')[0], "cat": "Category 1", "users": { "user1": 20, "user3": 40, "user4": 20 } },
-                { "costo": 137, "desc": "Transaction 36", "data": new Date("2021-03-01").toISOString().split('T')[0], "cat": "Category 1", "users": { "user3": 50, "user4": 30, "user1": 10 } },
-                { "costo": 814, "desc": "Transaction 29", "data": new Date("2022-09-01").toISOString().split('T')[0], "cat": "Category 0", "users": { "user3": 214, "user2": 600 } },
-                { "costo": 479, "desc": "Transaction 3", "data": new Date("2023-06-01").toISOString().split('T')[0], "cat": "Category 3", "users": { "user2": 288, "user1": 96, "user3": 95 } }
+                { "costo": 150, "desc": "Transaction 57", "data": new Date("2023-01-01"), "cat": "Category 1", "users": { "user1": 50, "user2": 30, "user3": 70 } },
+                { "costo": 955, "desc": "Transaction 6", "data": new Date("2023-09-01"), "cat": "Category 1", "users": { "user1": 318, "user2": 477, "user3": 160 } },
+                { "costo": 602, "desc": "Transaction 23", "data": new Date("2022-09-01"), "cat": "Category 4", "users": { "user2": 120, "user3": 482 } },
+                { "costo": 390, "desc": "Transaction 61", "data": new Date("2023-06-01"), "cat": "Category 1", "users": { "user2": 234, "user4": 78, "user3": 78 } },
+                { "costo": 141, "desc": "Transaction 61", "data": new Date("2023-05-01"), "cat": "Category 2", "users": { "user2": 63, "user3": 63, "user1": 15 } },
+                { "costo": 748, "desc": "Transaction 64", "data": new Date("2023-06-01"), "cat": "Category 3", "users": { "user4": 518, "user3": 148, "user2": 82 } },
+                { "costo": 156, "desc": "Transaction 81", "data": new Date("2020-08-01"), "cat": "Category 1", "users": { "user1": 20, "user3": 40, "user4": 20 } },
+                { "costo": 137, "desc": "Transaction 36", "data": new Date("2021-03-01"), "cat": "Category 1", "users": { "user3": 50, "user4": 30, "user1": 10 } },
+                { "costo": 814, "desc": "Transaction 29", "data": new Date("2022-09-01"), "cat": "Category 0", "users": { "user3": 214, "user2": 600 } },
+                { "costo": 479, "desc": "Transaction 3", "data": new Date("2023-06-01"), "cat": "Category 3", "users": { "user2": 288, "user1": 96, "user3": 95 } }
             ];
             
 

@@ -40,25 +40,29 @@ export default {
     },
     methods: {
         async addTransaction() {
+            try {
+                // Transform the users array into an object
+                const newTransaction = { ...this.transaction };
+                
+                newTransaction.users.forEach(user => {
+                    newTransaction[user.name] = user.quota;
+                });
 
-            // Transform the users array into an object
-            const transformedUsers = {};
-            this.transaction.users.forEach(user => {
-                transformedUsers[user.name] = user.quota;
-            });
-            this.transaction.users = transformedUsers;
+                newTransaction.costo=parseInt(newTransaction.costo);            
+                newTransaction.data=new Date(newTransaction.data);
 
-            this.transaction.costo=parseInt(this.transaction.costo);            
-            this.transaction.data=new Date(this.transaction.data);
-
-            const year = this.transaction.data.getFullYear();
-            const month = this.transaction.data.getMonth() + 1;
-            const response = await axios.post(`api/budget/${year}/${month}`, this.transaction, {
-                withCredentials: true, // Include credentials (cookies) in the request
-            });
-            console.log(response.data);
-            this.$router.push('/BudgetPage');
+                const year = newTransaction.data.getFullYear();
+                const month = newTransaction.data.getMonth() + 1;
+                const response = await axios.post(`api/budget/${year}/${month}`, newTransaction, {
+                    withCredentials: true,
+                });
+                console.log(response.data);
+                this.$router.push('/BudgetPage');
+            } catch (error) {
+                console.error(error);
+            }
         },
+
         addUser() {
             this.transaction.users.push({name: '', quota: ''});
         },

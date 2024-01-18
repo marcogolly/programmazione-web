@@ -59,6 +59,7 @@ app.get('/api/budget/whoami', async (req, res) => {
 
 // User sign in
 app.post('/api/auth/signin', async (req, res) => {
+    try{
     const db = await connectToDatabase();
     const users = db.collection('users');
     const db_user = await users.findOne({ username: req.body.username });
@@ -67,12 +68,17 @@ app.post('/api/auth/signin', async (req, res) => {
         req.session.authorized = true;
         res.json(db_user);
     } else {
-        res.status(403).send('Non autenticato!');
+        res.status(403).send('Credenziali errate');
+    }
+    }catch(err){
+        console.log(err);
+        res.send('Errore')
     }
 });
 
 // User sign up
 app.post('/api/auth/signup', async (req, res) => {
+
     const db = await connectToDatabase();
     const collection = db.collection('users');
     const user = {
@@ -81,62 +87,117 @@ app.post('/api/auth/signup', async (req, res) => {
         surname: req.body.surname,
         password: req.body.password,
     };
-    await collection.insertOne(user);
-    res.json(user);
+    collection.findOne({ username: user.username }, (err, result) => {
+        if (result) {
+            res.status(403).send('Username già utilizzato');
+        }
+        else if (user.username === '' || user.name === '' || user.surname === '' || user.password === '') {
+            res.status(403).send('Compila tutti i campi');
+        }
+        else if (user.password.length < 8) {
+            res.status(403).send('La password deve essere lunga almeno 8 caratteri');
+        }
+        else if (user.username.length < 4) {
+            res.status(403).send('Lo username deve essere lungo almeno 4 caratteri');
+        }
+        else {
+            collection.insertOne(user);
+            req.session.user = user;
+            req.session.authorized = true;
+            res.json(user);
+        }
+    });
 });
 
 // Get all transactions for the current user
 app.get('/api/budget', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const user = req.session.user.username;
-    const transactions = await collection.find({
-        [`users.${user}`]: { $exists: true },
-    }).toArray();
-    res.json(transactions);
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        const user = req.session.user.username;
+        const transactions = await collection.find({[`users.${user}`]: { $exists: true },
+        }).toArray();
+
+        res.json(transactions);
+    }catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
+
 });
 
 // Get transactions for a specific year and month for the current user
 app.get('/api/budget/:year/:month', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const user = req.session.user.username;
-    
-    const start = new Date(req.params.year, req.params.month - 1, 1);
-    const end = new Date(req.params.year, req.params.month, 1);
-    console.log(start);
-    console.log(end);
-    const transactions = await collection.find({
-        //[`users.${user}`]: { $exists: true },
-        data: { $gte: start, $lt: end },
-    }).toArray();
-    res.json(transactions);
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        const user = req.session.user.username;
+        
+        const start = new Date(req.params.year, req.params.month - 1, 1);
+        const end = new Date(req.params.year, req.params.month, 1);
+
+        const transactions = await collection.find({
+            [`users.${user}`]: { $exists: true },
+            data: { $gte: start, $lt: end },
+        }).toArray();
+
+        res.json(transactions);
+    } catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
+
 });
 
 // Get a specific transaction for the current user
 app.get('/api/budget/:year/:month/:id', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const transaction = await collection.find({
-        _id: new ObjectId(req.params.id),
-    }).toArray();
-    res.json(transaction);
+
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        const transaction = await collection.find({
+            _id: new ObjectId(req.params.id),
+        }).toArray();
+        res.json(transaction);
+    }catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
 });
 
 // Add a new transaction for a specific year and month for the current user
 app.post('/api/budget/:year/:month', verify, async (req, res) => {
-    console.log(req.body);
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const newTransaction = {
-        desc: req.body.desc,
-        data: req.body.data,
-        costo: parseInt(req.body.costo),
-        cat: req.body.cat,
-        users: req.body.users,
-    };
-    await collection.insertOne(newTransaction);
-    res.send('Transaction added successfully');
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        const transaction = {
+            desc: req.body.desc,
+            data: new Date(req.body.data),
+            costo: parseInt(req.body.costo),
+            cat: req.body.cat,
+            users: req.body.users,
+        };
+        
+        if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === ''){
+            res.status(403).send('Compila tutti i campi');
+        }
+        else if(transaction.users.length === 0){
+            res.status(403).send('Seleziona almeno un utente');
+        }
+        else if (transaction.users.some(user => user.quota === 0)) {
+            res.status(403).send('La quota di ogni utente deve essere diversa da 0');
+        }
+        else if (transaction.users.reduce((sum, user) => sum + user.quota, 0) !== transaction.costo) {
+            res.status(403).send('La somma delle quote degli utenti deve essere uguale al costo');
+        }
+        else{
+            await collection.insertOne(transaction);
+            res.send('Transaction added successfully');
+        }
+    }catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
 });
 
 // Update a specific transaction for the current user
@@ -144,132 +205,164 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
     try{
         const db = await connectToDatabase();
         const collection = db.collection('transactions');
-        const user = req.session.user.username;
-        const updatedTransaction = {
+        let updatedTransaction = {
             desc: req.body.desc,
             data: new Date(req.body.data).toISOString().split('T')[0],
             costo: parseInt(req.body.costo),
             cat: req.body.cat,
             users: req.body.users,
         }
-        console.log(updatedTransaction);
-    await collection.updateOne(
-        {
-            _id: new ObjectId(req.params.id),
-        },
-        { $set: updatedTransaction }
-    );
-    res.send('Transaction updated successfully');
+        updatedTransaction.users = Object.fromEntries(
+            Object.entries(updatedTransaction.users).map(([username, quota]) => [
+                username,
+                parseInt(quota),
+            ])
+        );
+    
+        if(updatedTransaction.desc === '' || updatedTransaction.data === '' || updatedTransaction.costo === '' || updatedTransaction.cat === ''){
+            throw new Error('Compila tutti i campi');
+        }
+        else if(updatedTransaction.users.length === 0){
+            throw new Error('Seleziona almeno un utente');
+        }
+        else if (Object.values(updatedTransaction.users).some(quota => quota === 0)) {
+            throw new Error('La quota di ogni utente deve essere diversa da 0');
+        }
+        else if (Object.values(updatedTransaction.users).reduce((acc, quota) => acc + quota, 0) !== updatedTransaction.costo) {
+            console.log(updatedTransaction.users);
+            throw new Error('La somma delle quote degli utenti deve essere uguale al costo');
+        }
+        else{
+            await collection.updateOne(
+                { _id: new ObjectId(req.params.id), },
+                { $set: updatedTransaction }
+            );
+            res.send('Transaction updated successfully');
+        }
     }catch(err){
         console.log(err);
-        res.send('Errore')
+        res.status(403).send(err.message || 'Errore');
     }
 });
 
 // Delete a specific transaction for the current user
 app.delete('/api/budget/:year/:month/:id', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    await collection.deleteOne({
-        _id: new ObjectId(req.params.id),
-    });
-    res.send('Transaction deleted successfully');
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        await collection.deleteOne({
+            _id: new ObjectId(req.params.id),
+        });
+        res.send('Transaction deleted successfully');
+    }catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
 });
 
 // Get balance for the current user
 app.get('/api/balance', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const user = req.session.user.username;
-    const transactions = await collection.find({
-        [`users.${user}`]: { $exists: true },
-    }).toArray();
-    const newTransactions = transactions
-        .map((transaction) => {
-            const { desc, data, cat, users } = transaction;
-            const desiredUser = req.session.user.username;
-            if (users[desiredUser]) {
-                return { desc, data, cat, quota: users[desiredUser] };
-            }
-        })
-        .filter(Boolean);
-    res.json(newTransactions);
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        const username = req.session.user.username;
+        let transactions = await collection.find({
+            [`users.${username}`]: { $exists: true },
+        }).toArray();
+        transactions = transactions
+            .map((transaction) => {
+                const { desc, data, cat, users } = transaction;
+                    return { desc, data, cat, quota: users[username] };
+            })
+        res.json(transactions);
+    }catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
 });
 
 // Get balance for a specific user
 app.get('/api/balance/:id', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const curr_username = req.session.user.username;
-    const other_username = req.params.id;
-    const transactions = await collection.find({
-        [`users.${curr_username}`]: { $exists: true },
-        [`users.${other_username}`]: { $exists: true },
-    }).toArray();
-    const newTransactions = transactions
-        .map((transaction) => {
-            const { desc, data, cat, users } = transaction;
-
-            if (users[curr_username]) {
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        const curr_username = req.session.user.username;
+        const other_username = req.params.id;
+        let transactions = await collection.find({
+            [`users.${curr_username}`]: { $exists: true },
+            [`users.${other_username}`]: { $exists: true },
+        }).toArray();
+        transactions = transactions
+            .map((transaction) => {
+                const { desc, data, cat, users } = transaction;
                 return { desc, data, cat, quota: users[curr_username], other_quota: users[other_username] };
-            }
-        })
-        .filter(Boolean);
-    res.json(newTransactions);
+
+            })
+        res.json(transactions);
+    }catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
 });
 
 // Search transactions for the current user
 app.get('/api/budget/search', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const user = req.session.user.username;
-    const transactions = await collection.find({
-        [`users.${user}`]: { $exists: true },
-        desc: { $regex: req.query.q, $options: 'i' },
-    }).toArray();
-    res.json(transactions);
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        const user = req.session.user.username;
+        const transactions = await collection.find({
+            [`users.${user}`]: { $exists: true },
+            desc: { $regex: req.query.q, $options: 'i' },
+        }).toArray();
+        res.json(transactions);
+
+    }catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
 });
 
 // Get transactions for a specific year for the current user
 app.get('/api/budget/:year', verify, async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('transactions');
-    const user = req.session.user.username;
+    try{
+        const db = await connectToDatabase();
+        const collection = db.collection('transactions');
+        
+        const user = req.session.user.username;
+        const year = parseInt(req.params.year);
+        const start = new Date(year, 0, 1);
+        const end = new Date(year, 12, 31);
 
-    const year = parseInt(req.params.year);
-    const start = new Date(year, 0, 1);
-    const end = new Date(year, 12, 31);
-
-    const transactions = await collection.find({
-        [`users.${user}`]: { $exists: true },
-        data: { $gte: start, $lt: end },
-    }).toArray();
-    res.json(transactions);
+        const transactions = await collection.find({
+            [`users.${user}`]: { $exists: true },
+            data: { $gte: start, $lt: end },
+        }).toArray();
+        res.json(transactions);
+    }catch(err){
+        console.log(err);
+        res.send('Errore');
+    }
 });
 
 
 app.get('/api/users/search', verify, async (req, res) => {
-
-    const client = new MongoClient(uri);
     try {
-        await client.connect();
-
-        const databaseName = 'users';
-        const db = client.db('users');
-        const collection = db.collection(databaseName);
+        const db = await connectToDatabase();
+        const collection = db.collection('users');
         
-        const user = req.session.user.username; // Get the username of the current user
-        const users = await collection.find({
+        const username = req.session.user.username; // Get the username of the current user
+        let users = await collection.find({
             [`username`]: { $regex: req.query.q, $options: 'i' },
         }).toArray();
+        
+        users = users.filter(user => user.username !== username);
+        
         res.json(users);
     } catch (error) {
         console.error(error);
         res.status(500).send("Errore del server");
-    } finally {
-        await client.close();
     }
-
 });
 
 

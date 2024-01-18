@@ -18,7 +18,8 @@
             </div>
             <button type="button" @click="addUser">Add User</button>
 
-            <button type="submit">Confirm</button>                                
+            <button type="submit">Confirm</button>
+            <p> {{ error }} </p>                           
     </form>
 </template>
 
@@ -33,9 +34,10 @@ export default {
                     desc: '',
                     cat: '',
                     costo: '',
-                    users: [{'':''}]
+                    users: [{'':''}],
                 },
-        };
+                error: '',
+            };
     },
     mounted(){
         try{
@@ -44,43 +46,53 @@ export default {
     },
     methods: {
         async byId() {
-            const id = this.$route.params.id;
-            const year = new Date(this.data).getFullYear();
-            const month = new Date(this.data).getMonth() + 1;
-            const response = await axios.get(`api/budget/${year}/${month}/${id}`, {
-                withCredentials: true, // Include credentials (cookies) in the request
-            });
-            this.transaction = response.data[0];
+            try{
+                const id = this.$route.params.id;
+                const year = new Date(this.data).getFullYear();
+                const month = new Date(this.data).getMonth() + 1;
+                const response = await axios.get(`api/budget/${year}/${month}/${id}`, {
+                    withCredentials: true, // Include credentials (cookies) in the request
+                });
+                this.transaction = response.data[0];
 
-            console.log(this.transaction);
-            this.transaction.data = new Date(this.transaction.data).toISOString().substr(0, 10);
-            this.transaction.users = Object.keys(this.transaction.users).map(key => {
-                return { name: key, quota: this.transaction.users[key] };
-            });
-            console.log(this.transaction);
+                console.log(this.transaction);
+                this.transaction.data = new Date(this.transaction.data).toISOString().split('T')[0];
+                this.transaction.users = Object.keys(this.transaction.users).map(key => {
+                    return { name: key, quota: this.transaction.users[key] };
+                });
+                console.log(this.transaction);
+            }catch(err){
+                console.log(err)
+            }
         },
         async updateTransaction(){
+            try{
+                const updatedTransaction = { ...this.transaction };
+                updatedTransaction.users = {};
 
-            const updatedTransaction = { ...this.transaction };
-            updatedTransaction.users = {};
-            this.transaction.users.forEach(user => {
-                updatedTransaction.users[user.name] = user.quota;
-            });
+                this.transaction.users.forEach(user => {
+                    updatedTransaction.users[user.name] = user.quota;
+                });
+                
+                console.log(updatedTransaction)
+                updatedTransaction.costo=parseInt(updatedTransaction.costo);            
+                updatedTransaction.data = new Date(updatedTransaction.data);
 
-            updatedTransaction.costo=parseInt(updatedTransaction.costo);            
-            updatedTransaction.data = new Date(updatedTransaction.data).toISOString().split('T')[0];
+                const id = this.$route.params.id;
+                const year = this.$route.params.year;
+                const month = this.$route.params.month;
 
-            const id = this.$route.params.id;
-            const year = this.$route.params.year;
-            const month = this.$route.params.month;
-
-            console.log(updatedTransaction);
-            const response = await axios.put(`api/budget/${year}/${month}/${id}`, updatedTransaction, {
-                withCredentials: true, // Include credentials (cookies) in the request
-            });
-            console.log(response.data);
-            
-            this.$router.push('/BudgetPage');
+                const response = await axios.put(`api/budget/${year}/${month}/${id}`, updatedTransaction, {
+                    withCredentials: true, // Include credentials (cookies) in the request
+                });
+                console.log(response.data);
+                
+                this.$router.push('/BudgetPage');
+            }
+            catch(err){
+                console.log(err)
+                this.error = err.response.data.message;
+            }
         },
         addUser() {
             this.transaction.users.push({name: '', quota: ''});
