@@ -1,11 +1,10 @@
 # Container for Vue app
 FROM node:latest
-RUN mkdir -p /var/www/vue
 WORKDIR /var/www/vue
-COPY ./package.json /var/www/vue/
+COPY package*.json ./
 RUN npm install
-COPY ./app/vue_app /var/www/vue
-RUN npm install -g http-server
-RUN npm run build
+COPY . .
+RUN npm install -g @vue/cli
 EXPOSE 8080
-CMD ["http-server", "dist"]
+
+CMD ["npm", "run", "serve"]

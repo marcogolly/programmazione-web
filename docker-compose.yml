@@ -25,5 +25,7 @@ services:
     #build: .
     #command: npm run serve
     #ports:
-      #- "8080:8080"
-
+   #   - "8080:8080"
+    #volumes:
+    #  - ./vue:/var/www/vue
+    #working_dir: /var/www/vue

@@ -78,7 +78,6 @@ app.post('/api/auth/signin', async (req, res) => {
 
 // User sign up
 app.post('/api/auth/signup', async (req, res) => {
-
     const db = await connectToDatabase();
     const collection = db.collection('users');
     const user = {
@@ -87,26 +86,27 @@ app.post('/api/auth/signup', async (req, res) => {
         surname: req.body.surname,
         password: req.body.password,
     };
-    collection.findOne({ username: user.username }, (err, result) => {
+
+    try {
+        const result = await collection.findOne({ username: user.username });
         if (result) {
-            res.status(403).send('Username già utilizzato');
-        }
-        else if (user.username === '' || user.name === '' || user.surname === '' || user.password === '') {
-            res.status(403).send('Compila tutti i campi');
-        }
-        else if (user.password.length < 8) {
-            res.status(403).send('La password deve essere lunga almeno 8 caratteri');
-        }
-        else if (user.username.length < 4) {
-            res.status(403).send('Lo username deve essere lungo almeno 4 caratteri');
-        }
-        else {
-            collection.insertOne(user);
+            throw new Error('Username già utilizzato');
+        } else if (user.username === '' || user.name === '' || user.surname === '' || user.password === '') {
+            throw new Error('Compila tutti i campi');
+        } else if (user.password.length < 8) {
+            throw new Error('La password deve essere lunga almeno 8 caratteri');
+        } else if (user.username.length < 4) {
+            throw new Error('Lo username deve essere lungo almeno 4 caratteri');
+        } else {
+            await collection.insertOne(user);
             req.session.user = user;
             req.session.authorized = true;
-            res.json(user);
+            return res.json(user);
         }
-    });
+    } catch (err) {
+        console.log(err);
+        return res.status(403).send(err || 'Errore');
+    }
 });
 
 // Get all transactions for the current user

@@ -22,7 +22,10 @@
       </ul>
     </nav>
   </header>
+  <body class="form-signin w-100 m-auto">
     <RouterView :session="session"></RouterView>
+
+  </body>
   </div>
 </template>
 

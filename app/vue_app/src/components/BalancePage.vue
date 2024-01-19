@@ -4,13 +4,12 @@
         <div class="form-group">
                 <label for="query">Balance with another user</label>
                 <input id="query" v-model="query" @keyup="autocomplete" class="form-control" style="width: 200px; display: inline-block;" />
-                <div class="dropdown">
-                    <ul class="dropdown-menu">
-                        <li v-for="item in filteredItems" :key="item.username" @click="balanceById(item.username)">
-                            <a class="dropdown-item">{{ item.username }}</a>
+
+                <ul class="dropdown-menu position-static d-grid gap-1 p-2 rounded-3 mx-0 shadow w-220px" data-bs-theme="light">
+                    <li v-for="item in filteredItems" :key="item.username" @click="balanceById(item.username)">
+                            <a class="dropdown-item rounded-2">{{ item.username }}</a>
                         </li>
-                    </ul>
-                </div>
+                </ul>
         </div>
         <br><br><br>
         <table class="table">

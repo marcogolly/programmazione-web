@@ -1,28 +1,44 @@
 <template>
     <div>
-        <form @submit.prevent="addTransaction">
-            <h1>Add Transaction</h1>
-            <label for="data">Data:</label>
-            <input id="data" v-model="transaction.data" type = "date" />
-            <label for="desc">Description:</label>
-            <input id="desc" v-model="transaction.desc" />
-            <label for="cat">Category:</label>
-            <input id="cat" v-model="transaction.cat" />
-            <label for="costo">Cost:</label>
-            <input id="costo" v-model="transaction.costo" />
+        <form @submit.prevent="addTransaction" class="jumbotron bg-light">
+            <h1 class="mb-4">Add Transaction</h1>
+            <div class="form-group">
+                <label for="data">Data:</label>
+                <input id="data" v-model="transaction.data" type="date" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="desc">Description:</label>
+                <input id="desc" v-model="transaction.desc" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="cat">Category:</label>
+                <input id="cat" v-model="transaction.cat" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="costo">Cost:</label>
+                <input id="costo" v-model="transaction.costo" class="form-control" />
+            </div>
 
             <div v-for="(user, index) in transaction.users" :key="index">
-                <label :for="'user-name-' + index">User Name:</label>
-                <input :id="'user-name-' + index" v-model="user.name" />
-                <label :for="'user-quota-' + index">Quota:</label>
-                <input :id="'user-quota-' + index" v-model="user.quota" />
+                <div class="form-group">
+                    <label :for="'user-name-' + index">User Name:</label>
+                    <input :id="'user-name-' + index" v-model="user.name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label :for="'user-quota-' + index">Quota:</label>
+                    <input :id="'user-quota-' + index" v-model="user.quota" class="form-control" />
+                </div>
             </div>
-            <button type="button" @click="addUser">Add User</button>
+            <div class="mb-3">
+                <button type="button" @click="addUser" class="btn btn-primary px-2">Add User</button>
 
-            <button type="submit">Confirm</button>
+                <button type="button" @click="removeUser" class="btn btn-primary px-2">Remove User</button>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-success">Confirm</button>
         </form>
     </div>
-    <p> {{ error }} </p>  
+    <p class="text-danger"> {{ error }} </p>  
 </template>
 
 <script>
@@ -65,6 +81,9 @@ export default {
 
         addUser() {
             this.transaction.users.push({name: '', quota: ''});
+        },
+        removeUser() {
+            this.transaction.users.pop();
         },
     },
 };
