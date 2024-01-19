@@ -25,12 +25,14 @@
         </div>
 
         <div class="registration-status"> 
-            <p class="mt-4"> {{ registrationStatus }} </p>
+            <p class="text-danger"> {{ errore }} </p>  
         </div>
     </div>
 </template>
 
 <script type="text/jsx">
+
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -38,44 +40,40 @@ export default {
             name: '',
             surname: '',
             password: '',
-            registrationStatus: '',
+            errore: '',
         }
     },
     
     methods: {
         async registerUser() {
-            try {
-                const response = await fetch('http://localhost:3000/api/auth/signup', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+                await axios.post('api/auth/signup', {
                         username: this.username,
                         name: this.name,
                         surname: this.surname,
                         password: this.password
-                    })
+                },{
+                    withCredentials: true, // Include credentials (cookies) in the request
+                })
+                .then(
+                    res=> {
+                        console.log(res.data);
+                        this.$router.push('/LoginForm');
+                    }
+                    )
+                    .catch (error=> { 
+                    console.log(error);
+                    this.errore =error.response.data;
                 });
-                console.log("porca madonna troia di merda");
-
-                if(response.ok){
-                    this.registrationStatus = 'Registration successful';
-                    this.$router.push('/LoginForm'); // Route to the login page
-                    
-                } else {
-                    console.log(response.data);  
-                    this.registrationStatus = "errore";
-                }
-                
-                
-            } catch (error) {
-                console.log(error);
-                
-                this.registrationStatus =error.response.data;
-                // Handle error
             }
-        }
     }
 }
 </script>
+
+<style>
+    .form-signin {
+        width: 100%;
+        max-width: 630px;
+        padding: 15px;
+        margin: auto;
+    }
+</style>

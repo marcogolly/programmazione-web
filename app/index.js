@@ -93,19 +93,19 @@ app.post('/api/auth/signup', async (req, res) => {
             throw new Error('Username già utilizzato');
         } else if (user.username === '' || user.name === '' || user.surname === '' || user.password === '') {
             throw new Error('Compila tutti i campi');
-        } else if (user.password.length < 8) {
-            throw new Error('La password deve essere lunga almeno 8 caratteri');
+        } else if (user.password.length < 4) {
+            throw new Error('La password deve essere lunga almeno 4 caratteri');
         } else if (user.username.length < 4) {
             throw new Error('Lo username deve essere lungo almeno 4 caratteri');
         } else {
             await collection.insertOne(user);
             req.session.user = user;
             req.session.authorized = true;
-            return res.json(user);
+            res.json(user);
         }
     } catch (err) {
         console.log(err);
-        return res.status(403).send(err || 'Errore');
+        res.status(403).send(err.data || 'Errore');
     }
 });
 
@@ -177,7 +177,6 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
             cat: req.body.cat,
             users: req.body.users,
         };
-
         
         if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === ''){
             throw new Error('Compila tutti i campi');
@@ -236,8 +235,7 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
             res.send('Transaction updated successfully');
         }
     }catch(err){
-        console.log(err);
-        res.status(403).send(err.message || 'Errore');
+        res.status(403).send(err || 'Errore');
     }
 });
 

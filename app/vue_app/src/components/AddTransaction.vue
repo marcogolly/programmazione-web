@@ -38,7 +38,7 @@
             <button type="submit" class="btn btn-success">Confirm</button>
         </form>
     </div>
-    <p class="text-danger"> {{ error }} </p>  
+    <p class="text-danger"> {{ errore }} </p>  
 </template>
 
 <script>
@@ -76,6 +76,7 @@ export default {
                 this.$router.push('/BudgetPage');
             } catch (error) {
                 console.error(error);
+                this.errore = error.response.data;
             }
         },
 

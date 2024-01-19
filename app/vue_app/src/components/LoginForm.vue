@@ -13,7 +13,7 @@
             </div>
             <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
         </form>
-        {{ feedback }}
+        <p class="text-danger"> {{ errore }} </p>  
     </div>
 </main>
 </template>
@@ -26,7 +26,7 @@ export default {
         return {
             username: '',
             password: '',
-            feedback: ''
+            errore: ''
         }
     },
     methods: {
@@ -44,7 +44,7 @@ export default {
                     }
                     )
                     .catch (error=> { 
-                    this.feedback =error.response.data;
+                    this.errore =error.response.data;
                 });
             
         }
