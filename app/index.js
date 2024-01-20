@@ -114,10 +114,12 @@ app.get('/api/budget', verify, async (req, res) => {
     try{
         const db = await connectToDatabase();
         const collection = db.collection('transactions');
-        const user = req.session.user.username;
-        const transactions = await collection.find({[`users.${user}`]: { $exists: true },
+        const username = req.session.user.username;
+        const transactions = await collection.find({
+            [`users.${username}`]: { $exists: true },
+            costo:{ $ne: 0 }
         }).toArray();
-
+            
         res.json(transactions);
     }catch(err){
         console.log(err);
@@ -131,14 +133,15 @@ app.get('/api/budget/:year/:month', verify, async (req, res) => {
     try{
         const db = await connectToDatabase();
         const collection = db.collection('transactions');
-        const user = req.session.user.username;
+        const username = req.session.user.username;
         
         const start = new Date(req.params.year, req.params.month - 1, 1);
         const end = new Date(req.params.year, req.params.month, 1);
 
         const transactions = await collection.find({
-            [`users.${user}`]: { $exists: true },
+            [`users.${username}`]: { $exists: true },
             data: { $gte: start, $lt: end },
+            costo:{ $ne: 0 }
         }).toArray();
 
         res.json(transactions);
@@ -176,9 +179,10 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
             costo: parseInt(req.body.costo),
             cat: req.body.cat,
             users: req.body.users,
+            user: req.session.user.username,
         };
         
-        if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === ''){
+        if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === '' || transaction.user===''){
             throw new Error('Compila tutti i campi');
         }
         else if(transaction.users.length === 0){
@@ -197,7 +201,7 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
         }
     }catch(err){
         console.log(err);
-        res.status(403).send(err.message || 'Errore');
+        res.status(403).send(err.data || 'Errore');
     }
 });
 
@@ -212,6 +216,7 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
             costo: parseInt(req.body.costo),
             cat: req.body.cat,
             users: req.body.users,
+            user: req.session.user.username,
         }
     
         if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === ''){
@@ -235,7 +240,7 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
             res.send('Transaction updated successfully');
         }
     }catch(err){
-        res.status(403).send(err || 'Errore');
+        res.status(403).send(err.data || 'Errore');
     }
 });
 
@@ -261,14 +266,24 @@ app.get('/api/balance', verify, async (req, res) => {
         const collection = db.collection('transactions');
         const username = req.session.user.username;
         let transactions = await collection.find({
-            [`users.${username}`]: { $exists: true },
+            $or:[
+                {[`users.${username}`]: { $exists: true }},
+                {user: username}
+            ]
         }).toArray();
-        transactions = transactions
-            .map((transaction) => {
-                const { desc, data, cat, users } = transaction;
-                    return { desc, data, cat, quota: users[username] };
-            })
+
+        transactions.forEach(tran => {
+            if(tran.user ===username){
+                    tran.dare =Math.abs(tran.costo-tran.users[username]);
+                    tran.avere = null;
+            }
+            else{
+                tran.dare =null;
+                tran.avere = Math.abs(tran.users[username]);
+            }
+        });
         res.json(transactions);
+
     }catch(err){
         console.log(err);
         res.send('Errore');
@@ -283,16 +298,24 @@ app.get('/api/balance/:id', verify, async (req, res) => {
         const curr_username = req.session.user.username;
         const other_username = req.params.id;
         let transactions = await collection.find({
-            [`users.${curr_username}`]: { $exists: true },
-            [`users.${other_username}`]: { $exists: true },
+            $or:[
+                {user:other_username, [`users.${curr_username}`]: { $exists: true }},
+                {user: curr_username, [`users.${other_username}`]: { $exists: true }}
+            ]
         }).toArray();
-        transactions = transactions
-            .map((transaction) => {
-                const { desc, data, cat, users } = transaction;
-                return { desc, data, cat, quota: users[curr_username], other_quota: users[other_username] };
 
-            })
+        transactions.forEach(tran => {
+            if(tran.user ===curr_username){
+                    tran.dare =Math.abs(tran.users[other_username]);
+                    tran.avere = null;
+            }
+            else{
+                tran.dare =null;
+                tran.avere = Math.abs(tran.users[curr_username]);
+            }
+        });
         res.json(transactions);
+
     }catch(err){
         console.log(err);
         res.send('Errore');
@@ -304,11 +327,17 @@ app.get('/api/budget/search', verify, async (req, res) => {
     try{
         const db = await connectToDatabase();
         const collection = db.collection('transactions');
-        const user = req.session.user.username;
+        const username = req.session.user.username;
         const transactions = await collection.find({
-            [`users.${user}`]: { $exists: true },
-            desc: { $regex: req.query.q, $options: 'i' },
+            [`users.${username}`]: { $exists: true },
+            costo:{ $ne: 0 },
+            $or: [
+                { desc: { $regex: req.query.q, $options: 'i' } },
+                { cat: { $regex: req.query.q, $options: 'i' } },
+                { data: { $regex: req.query.q, $options: 'i' } },
+            ]
         }).toArray();
+
         res.json(transactions);
 
     }catch(err){
@@ -322,18 +351,20 @@ app.get('/api/budget/:year', verify, async (req, res) => {
     try{
         const db = await connectToDatabase();
         const collection = db.collection('transactions');
+        const username = req.session.user.username;
+        const year = req.params.year;
         
-        const user = req.session.user.username;
-        const year = parseInt(req.params.year);
         const start = new Date(year, 0, 1);
         const end = new Date(year, 12, 31);
 
         const transactions = await collection.find({
-            [`users.${user}`]: { $exists: true },
+            [`users.${username}`]: { $exists: true },
             data: { $gte: start, $lt: end },
+            costo:{ $ne: 0 }
         }).toArray();
+
         res.json(transactions);
-    }catch(err){
+    } catch(err){
         console.log(err);
         res.send('Errore');
     }
@@ -345,12 +376,14 @@ app.get('/api/users/search', verify, async (req, res) => {
         const db = await connectToDatabase();
         const collection = db.collection('users');
         
-        const username = req.session.user.username; // Get the username of the current user
         let users = await collection.find({
-            [`username`]: { $regex: req.query.q, $options: 'i' },
+            
+            $or: [
+                { [`username`]: { $regex: req.query.q, $options: 'i' } },
+                { [`name`]: { $regex: req.query.q, $options: 'i' } },
+                { [`surname`]: { $regex: req.query.q, $options: 'i' } }
+            ]
         }).toArray();
-        
-        users = users.filter(user => user.username !== username);
         
         res.json(users);
     } catch (error) {

@@ -1,36 +1,36 @@
 <template>
     <div class="container">
-        <div class="jumbotron bg-light">
-            <h1 v-if="!user" class="display-4">Welcome to the budget app</h1>
-            <h1 v-if="user" class="display-4">Welcome back, {{ user }}!</h1>
+        <div class="jumbotron">
+            <h1 v-if="!user" class="display-4">Benvenuto nell'app!</h1>
+            <h1 v-if="user" class="display-4">Bentornato, {{ user }}!</h1>
 
             <p class="lead">
-                This web app allows you to manage your expenses and register transactions
+                Questa web app ti permette di gestire le tue spese e registrare transazioni
             </p>
 
-            <div class="d-grid gap-2">
-                <router-link to="/LoginForm" class="btn btn-primary">
-                    Click here to login
+            <div class="d-flex justify-content-center">
+                <router-link to="/LoginForm" class="btn btn-one me-2">
+                    Clicca qui per effettuare il login
                 </router-link>
-                <router-link to="/RegisterForm" class="btn btn-outline-secondary">
-                    Click here to register
+                <router-link to="/RegisterForm" class="btn btn-outline-two">
+                    Clicca qui per registrarti
                 </router-link>
             </div>
             
             <p class="lead py-4">
-                After logging in, you can use the budget page to manage your budget and view your balance
-                page to register transactions and view your expenses
+                Dopo aver effettuato il login, puoi utilizzare la pagina Balance per visualizzare i tuoi crediti e debiti con gli altri utenti. Inoltre, puoi utilizzare la
+                la pagina Budget per registrare transazioni e visualizzare le tue spese
             </p>
-            <div class="d-flex gap justify-content-center py-2">
-                <router-link to="/BudgetPage" class="btn btn-primary d-inline-flex align-items-center" type="button">
+            <div class="d-flex justify-content-center">
+                <router-link to="/BudgetPage" class="btn btn-one me-2" type="button">
                     Budget
                 </router-link>
-                <router-link to="/BalancePage" class="btn btn-outline-secondary d-inline-flex align-items-center" type="button">
+                <router-link to="/BalancePage" class="btn btn-outline-two" type="button">
                     Balance
                 </router-link>
             </div>
             <p class="lead">
-                You can use the navigation bar to switch between pages
+                Per navigare tra le varie pagine puoi utilizzare la navbar in alto
             </p>
         </div>
     </div>
@@ -50,17 +50,16 @@ export default {
     },
     methods: {
         async getLoggedUser() {
-            this.user = await getUser();
+            try{
+                this.user = await getUser();
+            }catch(err){
+                console.log(err);
+            }
         },
     },
 }
 </script>
 
-<style scoped>
-.jumbotron {
-    margin-top: 50px;
-    padding: 30px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-}
+<style scoped lang ="scss">
+@import '../assets/style.scss';
 </style>

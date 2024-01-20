@@ -8,10 +8,14 @@ import BudgetPage from './components/BudgetPage.vue'
 import UpdateTransaction from './components/UpdateTransaction.vue'
 import AddTransaction from './components/AddTransaction.vue'
 import BalancePage from './components/BalancePage.vue'
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js'
 
 import './axios'
-import 'bootstrap/dist/css/bootstrap.css'
-import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js'
+
+
+import 'bootstrap/dist/css/bootstrap.css';
+
+
 
 //import store from './store';
 const routes = [

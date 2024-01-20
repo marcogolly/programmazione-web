@@ -1,49 +1,58 @@
 <template>
-    <div class="container" >
-        <h1>Update Transaction</h1>
-        <form @submit.prevent="updateTransaction" >
-            <div class="form-group">
-                <label for="data">Data:</label>
+    <div>
+        <form @submit.prevent="updateTransaction" class="jumbotron">
+            <h1 class="mt-4">Aggiorna spesa</h1>
+            <div class="form-floating mb-3">
                 <input id="data" v-model="transaction.data" type="date" class="form-control" />
+                <label for="data">Data</label>
             </div>
-            <div class="form-group">
-                <label for="desc">Description:</label>
+            <div class="form-floating mb-3">
                 <input id="desc" v-model="transaction.desc" class="form-control" />
+                <label for="desc">Descrizione</label>
             </div>
-            <div class="form-group">
-                <label for="cat">Category:</label>
+            <div class="form-floating mb-3">
                 <input id="cat" v-model="transaction.cat" class="form-control" />
+                <label for="cat">Categoria</label>
             </div>
-            <div class="form-group">
-                <label for="costo">Cost:</label>
+            <div class="form-floating mb-3">
                 <input id="costo" v-model="transaction.costo" class="form-control" />
+                <label for="costo">Costo</label>
             </div>
             <hr class="my-4"> <!-- Add separator here with Bootstrap class -->
             <div class="form-group">
-                <label for="users">Users:</label>
-                <div v-for="(user, index) in transaction.users" :key="index">
-                    <div class="form-row">
-                        <div class="col">
-                            <hr > <!-- Add separator here with Bootstrap class -->
-                            <label :for="'user-name-' + index">User Name:</label>
-                            <input :id="'user-name-' + index" v-model="user.name" class="form-control" />
+                <label for="users">Utenti</label>
+                <div v-for="(user, index) in transaction.users" :key="index" class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            
+                            <input :id="'user-name-' + index" v-model="user.name" @keyup="autocomplete(index)" class="form-control" />
+                            <label :for="'user-name-' + index">Username</label>
+                            <ul v-if="filteredItems[index]" class="dropdown-menu position-absolute d-grid gap-1 p-2 rounded-3 mx-0 shadow w-220px">
+                                <li v-for="item in filteredItems[index]" :key="item.username" @click="completeUser(item.username,index)">
+                                    <a class="dropdown-item rounded-2">{{ item.username }}</a>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="col">
-                            <label :for="'user-quota-' + index">Quota:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+
                             <input :id="'user-quota-' + index" v-model="user.quota" class="form-control" />
+                            <label :for="'user-quota-' + index">Quota</label>
                         </div>
                     </div>
                 </div>
             </div>
-            <div>
-                <button type="button" class="btn btn-primary" @click="addUser">Add User</button>
-                <button type="submit" class="btn btn-success">Confirm</button>
+            <div class="mb-3 p-3 ">
+                <button type="button" @click="addUser" class="btn btn-one px-2 ">Aggiungi utente</button>
+                <button type="button" @click="removeUser" class="btn btn-one px-2">Rimuovi utente</button>
             </div>
-            <p class="text-danger">{{ error }}</p>
+            <br>
+            <button type="submit" class="btn btn-two">Conferma</button>
+            <p class="text-danger"> {{ errore }} </p>  
         </form>
     </div>
 </template>
-
 <script>
 import axios from 'axios';
 import { formatTransaction } from '../assets/utils.js';
@@ -59,12 +68,15 @@ export default {
                 costo: '',
                 users: [],
             },
-            error: '',
+            errore: '',
+            filteredItems: [],
+
         };
     },
     mounted() {
         try {
             this.byId();
+            //TODO CHECK LOG IN
         } catch (err) {
             console.log(err);
         }
@@ -108,17 +120,36 @@ export default {
                 this.$router.push('/BudgetPage');
             } catch (err) {
                 console.log(err);
-                this.error = err.response.data;
+                this.errore = err.response.data;
             }
         },
         addUser() {
             this.transaction.users.push({ name: '', quota: '' });
         },
+        removeUser() {
+            this.transaction.users.pop();
+        },
+        async autocomplete(i) {
+            try{
+                const response = await axios.get(`api/users/search?q=${this.transaction.users[i].name}`, {
+                    withCredentials: true, // Include credentials (cookies) in the request
+                });
+                this.filteredItems[i] = response.data;
+            }catch(err){
+                console.log(err);
+            }
+        },
+        async completeUser(text, i){
+            this.transaction.users[i].name = text;
+            this.filteredItems[i]=null;
+        }
     },
 };
 </script>
 
-<style>
+<style scoped lang ="scss">
+@import '../assets/style.scss';
+
 .container {
     max-width: 600px;
     margin: 0 auto;

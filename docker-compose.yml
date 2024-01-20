@@ -20,12 +20,13 @@ services:
       - "27017:27017"
   
 
-  #vue:
-    #container_name: vue
-    #build: .
-    #command: npm run serve
-    #ports:
-   #   - "8080:8080"
-    #volumes:
-    #  - ./vue:/var/www/vue
-    #working_dir: /var/www/vue
+  vue:
+      container_name: vue
+      build: ./app/vue_app
+      command: 'npm run serve'
+      ports:
+        - "8080:8080"
+      volumes:
+        - ./app/vue_app:/var/www/vue
+      working_dir: /var/www/vue
+

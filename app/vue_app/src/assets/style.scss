@@ -1,0 +1,100 @@
+$one: #1e2f23;
+$two: #34623f;
+$three: #607744;
+$four: #768948;
+$five: #b39b4d45;
+$six: #b39b4d37;
+$seven: #b39b4d;
+
+.jumbotron {
+    margin-top: 50px;
+    padding: 30px;
+    background-color: $five;
+    border-radius: 5px;
+}
+
+.btn-one, .btn-one:active{
+    background-color: $one;
+    border-color: $one;
+    color: white;
+}
+.btn, .btn:active{
+    background-color: $one;
+    border-color: $one;
+}
+.btn-one:hover {
+    background-color: $three;
+    border-color: $one;
+    color: #FFFFFF;
+
+}
+.btn-outline-two{
+    background-color: $three;
+    border-color: $three;
+    color: #FFFFFF;
+}
+.btn-outline-two:hover{
+    background-color: $four;
+    border-color: $three;
+    color: #FFFFFF;
+}
+.form-signin {
+    width: 100%;
+    max-width: 630px;
+    padding: 15px;
+    margin: auto;
+}
+
+
+.table{
+    background-color: $five;
+}
+.btn-two{
+    background-color: $three;
+    border-color: $three;
+    color: #FFFFFF;
+}
+.btn-two:hover{
+    background-color: $four;
+    border-color: $four;
+}
+table td{
+    background-color: transparent;
+}
+table th{
+    background-color: transparent;
+}
+tr:nth-child(even) {
+    background-color: $six;
+}
+
+
+
+.nav-link:hover{
+    cursor: pointer;
+    background-color: $three;
+}
+h1{
+    font-weight: 500;
+}
+
+.dropdown-menu{
+    background-color: $one;
+}
+.dropdown-item{
+    color: #FFFFFF;
+}
+.dropdown-item:active{
+    color: #FFFFFF;
+    background-color: $three;
+}
+.tableth{
+    background-color: $one;
+}
+
+.tablethcol {
+    color: #FFFFFF;
+}
+.table{
+    border-color: $one;
+}
