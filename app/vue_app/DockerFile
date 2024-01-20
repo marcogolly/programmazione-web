@@ -5,7 +5,6 @@ WORKDIR /var/www/vue
 RUN npm install -g @vue/cli
 COPY ./package.json /var/www/vue
 RUN npm install
-RUN npm rebuild node-sass
 RUN npm install -g npm
 COPY ./src /var/www/vue
 EXPOSE 8080
