@@ -35,18 +35,19 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 d-flex align-items-center">
                             <div class="form-floating mb-3">
-
                                 <input :id="'user-quota-' + index" v-model="user.quota" class="form-control" />
                                 <label :for="'user-quota-' + index">Quota</label>
+                            </div>
+                            <div class="form-floating mb-3 px-4">
+                            <button type="button" @click="removeUser(index)" class="btn btn-two px-2 ">Remove User</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="mb-3 p-3 ">
                     <button type="button" @click="addUser" class="btn btn-one px-2 ">Add User</button>
-                    <button type="button" @click="removeUser" class="btn btn-one px-2">Remove User</button>
                 </div>
                 <br>
                 <button type="submit" class="btn btn-two">Confirm</button>
@@ -100,8 +101,8 @@ export default {
         addUser() {
             this.transaction.users.push({name: '', quota: ''});
         },
-        removeUser() {
-            this.transaction.users.pop();
+        removeUser(i) {
+            this.transaction.users.splice(i, 1);
         },
 
         async autocomplete(i) {

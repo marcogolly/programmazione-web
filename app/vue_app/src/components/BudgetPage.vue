@@ -1,20 +1,26 @@
 <template>
     <div class="jumbotron">
         <h1 class="mt-4">Expenses</h1>
-        <div class="row">
-            <div class="col-md">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="year" v-model="year">
-                    <label for="year">Year</label>
-                </div>
+        <button class="btn btn-two" @click="showFilterDate()"> Filter by date </button>
+        <button class="btn btn-two" @click="showFilterTran()"> Search a transaction </button>
+        <div class="row g-3" v-if="filterDate">
+            <div class ="col md-2"> 
+                <label for="year">Select Year:</label>
+                <select v-model="year" id="year" name="year" class="form-select" @change="byYearMonth()">
+                    <!-- Use v-for to dynamically generate the year options -->
+                    <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
+                </select>
             </div>
-            <div class="col-md">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="month" v-model="month">
-                    <label for="month">Month</label>
-                </div>
+            <div class="col md-4">
+                <label for="month">Select Month:</label>
+                <select v-model="month" id="month" name="month" class="form-select" @change="byYearMonth()">
+                    <option v-for="month in months" :key="month.value" :value="month.value">{{ month.label }}</option>
+                </select>
             </div>
-            <div class="col-md">
+            
+        </div>
+        <div class="row g-3" v-if="filterTran">
+            <div class="col-md-4">
                 <div class="form-floating mb-3 dropdown position-relative">
                     <input type="text" class="form-control" id="query" v-model="query" @keyup="autocomplete">
                     <label for="query">Search for an expense</label>
@@ -25,18 +31,9 @@
                     </ul>
                 </div>
             </div>
+        </div>
+        
             
-        </div>
-
-        <div class="row">
-            <p> Filter by date </p>
-            <div class="col-md-6">
-                <button class="btn btn-one " @click="byYear">By year</button>
-            </div>
-            <div class="col-md-6">
-                <button class="btn btn-one" @click="byYearMonth">By year and month</button>
-            </div>
-        </div>
 
         
         <table class="table" >
@@ -84,7 +81,7 @@
 
 <script>
 import axios from 'axios';
-import { getUser } from '../assets/utils.js';
+import { getUser, getYears, getMonths } from '../assets/utils.js';
 
 export default {
     data() {
@@ -95,13 +92,19 @@ export default {
             query: '',
             filteredItems: [],
             user: '',
-            showDetails: false,
+            filterDate: false,
+            filterTran: false,
+
         };
     },
     mounted() {
         try {
             this.isLogged();
             this.getTransactions();
+            this.years = getYears();
+            this.months = getMonths();
+            this.filterDate=false;
+            this.filterTran=false;
         } catch (err) {
             console.log(err);
         }
@@ -126,6 +129,13 @@ export default {
         },
         async byYear() {
             try{
+                if (this.year ==='---'){
+                    console.log(this.year);
+                    console.log(this.month);
+                    this.getTransactions();
+                    return;
+                }
+                console.log(this.year)
                 const response = await axios.get(`api/budget/${this.year}`, {
                     withCredentials: true,  
                 });
@@ -140,6 +150,11 @@ export default {
         },
         async byYearMonth() {
             try{
+                
+                if (this.month ==='' || this.year ==''){
+                    this.byYear();
+                    return;
+                }
                 const response = await axios.get(`api/budget/${this.year}/${this.month}`, {
                     withCredentials: true,  
                 });
@@ -230,6 +245,14 @@ export default {
             }catch(err){
                     console.log(err);
                 }
+        },
+        async showFilterDate() {
+            this.filterDate = !this.filterDate;
+            this.filterTran = false;
+        },
+        async showFilterTran() {
+            this.filterTran = !this.filterTran;
+            this.filterDate = false;
         },
     },
 };

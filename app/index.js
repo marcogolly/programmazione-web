@@ -354,7 +354,7 @@ app.get('/api/budget/:year', verify, async (req, res) => {
         const year = req.params.year;
         
         const start = new Date(year, 0, 1);
-        const end = new Date(year, 12, 31);
+        const end = new Date(year, 11, 31);
 
         const transactions = await collection.find({
             [`users.${username}`]: { $exists: true },

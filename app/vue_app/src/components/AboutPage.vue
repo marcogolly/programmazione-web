@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="jumbotron">
-            <h1 class="mt-4">Informations about this project</h1>
+            <h1 class="mt-4">Information about this project</h1>
 
             <p class="lead">
                 This project was created as final project of my Web Programming course <br>
