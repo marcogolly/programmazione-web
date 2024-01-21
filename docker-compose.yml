@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    container_name: app
+    container_name: nodeapp_golli
     build: .
     command: nodemon --watch . -e js index.js
     ports:
@@ -12,7 +12,7 @@ services:
       - "mongo:mongohost"
 
   mongo:
-    container_name: mongo
+    container_name: mongo_golli
     image: mongo:latest
     volumes:
       - ./data:/data/db
@@ -21,7 +21,7 @@ services:
   
 
   vue:
-      container_name: vue
+      container_name: vueapp_golli
       build: ./app/vue_app
       command: 'npm run serve'
       ports:

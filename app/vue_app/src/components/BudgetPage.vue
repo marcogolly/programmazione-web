@@ -131,12 +131,9 @@ export default {
         async byYear() {
             try{
                 if (this.year ==='---'){
-                    console.log(this.year);
-                    console.log(this.month);
                     this.getTransactions();
                     return;
                 }
-                console.log(this.year)
                 const response = await axios.get(`api/budget/${this.year}`, {
                     withCredentials: true,  
                 });

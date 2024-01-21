@@ -1,24 +1,19 @@
-# vue-app-demo
+# vue-app
 
 ## Project setup
 ```
+in root folder execute this
+
+cd app
 npm install
-```
+cd vue_app
+npm install
+cd ..
+cd ..
+docker-compose up
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+then in another terminal
+cd app
+node db.js
 
-### Compiles and minifies for production
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

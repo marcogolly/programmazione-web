@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 async function connectToDatabase() {
     const client = new MongoClient(uri);
     await client.connect();
-    return client.db('users');
+    return client.db('transactions');
 }
 
 // Authentication middleware

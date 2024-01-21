@@ -87,7 +87,6 @@ export default {
                 const year = newTransaction.date.getFullYear();
                 const month = newTransaction.date.getMonth() + 1;
                 
-                console.log(newTransaction);
                 await axios.post(`api/budget/${year}/${month}`, newTransaction, {
                     withCredentials: true,
                 });

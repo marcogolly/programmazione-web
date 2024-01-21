@@ -8,7 +8,7 @@ try {
     await client.connect();
 
         // Get the database object
-        const db = client.db('users');
+        const db = client.db('transactions');
 
         if(db.collection('users') != null){
             await db.dropCollection('users');
