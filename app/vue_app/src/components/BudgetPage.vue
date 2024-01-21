@@ -1,23 +1,23 @@
 <template>
     <div class="jumbotron">
-        <h1 class="mt-4">Spese</h1>
+        <h1 class="mt-4">Expenses</h1>
         <div class="row">
             <div class="col-md">
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="year" v-model="year">
-                    <label for="year">Anno</label>
+                    <label for="year">Year</label>
                 </div>
             </div>
             <div class="col-md">
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="month" v-model="month">
-                    <label for="month">Mese</label>
+                    <label for="month">Month</label>
                 </div>
             </div>
             <div class="col-md">
                 <div class="form-floating mb-3 dropdown position-relative">
                     <input type="text" class="form-control" id="query" v-model="query" @keyup="autocomplete">
-                    <label for="query">Cerca una spesa</label>
+                    <label for="query">Search for an expense</label>
                     <ul v-if="filteredItems.length > 0" class="dropdown-menu position-absolute d-grid gap-1 p-2 rounded-3 mx-0 shadow w-220px">
                         <li v-for="item in filteredItems" :key="item._id" @click="findById(item._id)">
                             <a class="dropdown-item rounded-2">{{ item.desc }}</a>
@@ -29,12 +29,12 @@
         </div>
 
         <div class="row">
-            <p> Filtra per data </p>
+            <p> Filter by date </p>
             <div class="col-md-6">
-                <button class="btn btn-one " @click="byYear">Per anno</button>
+                <button class="btn btn-one " @click="byYear">By year</button>
             </div>
             <div class="col-md-6">
-                <button class="btn btn-one" @click="byYearMonth">Per anno e mese</button>
+                <button class="btn btn-one" @click="byYearMonth">By year and month</button>
             </div>
         </div>
 
@@ -43,12 +43,12 @@
             <thead>
                 <tr class="tableth">
                     <th v-if="showDetails" class="tablethcol">Id</th>
-                    <th class="tablethcol">Data</th>
-                    <th class="tablethcol">Descrizione</th>
-                    <th class="tablethcol">Categoria</th>
-                    <th class="tablethcol">Quota personale</th>
-                    <th class="tablethcol">Totale</th>
-                    <th v-if="showDetails" class="tablethcol">Utenti</th>
+                    <th class="tablethcol">Date</th>
+                    <th class="tablethcol">Description</th>
+                    <th class="tablethcol">Category</th>
+                    <th class="tablethcol">Personal quota</th>
+                    <th class="tablethcol">Total</th>
+                    <th v-if="showDetails" class="tablethcol">Users</th>
                     <th class="tablethcol"></th>
                     <th class="tablethcol"></th>
                     <th class="tablethcol"></th>
@@ -59,29 +59,30 @@
             <tbody>
                 <tr v-for="tran in transactions" :key="tran._id">
                     <td v-if="showDetails">{{ tran._id }} </td>
-                    <td>{{ tran.data }}</td>
+                    <td>{{ tran.date }}</td>
                     <td>{{ tran.desc }}</td>
                     <td>{{ tran.cat }}</td>
                     <td>{{ tran.users[user] }}</td>
-                    <td>{{ tran.costo }}</td>
+                    <td>{{ tran.cost }}</td>
                     <td>
                         <div v-if="showDetails">
                             <td v-for="(u, key) in tran.users" :key="key">{{ key }}: {{ u }}</td>
                         </div>
                     </td>
-                    <td> <button class="btn btn-two" @click="deleteById(tran._id)">Elimina</button></td>
-                    <td> <button class="btn btn-one" @click="modifyById(tran._id)">Modifica</button></td>
-                    <td> <button class="btn btn-one" @click="expandById(tran._id)" v-if="!showDetails">Espandi</button></td>
-                    <td> <button class="btn btn-one" @click="getTransactions()" v-if="showDetails">Comprimi</button></td>
+                    <td> <button class="btn btn-two" @click="deleteById(tran._id)">Delete</button></td>
+                    <td> <button class="btn btn-one" @click="modifyById(tran._id)">Modify</button></td>
+                    <td> <button class="btn btn-one" @click="expandById(tran._id)" v-if="!showDetails">Expand</button></td>
+                    <td> <button class="btn btn-one" @click="getTransactions()" v-if="showDetails">Collapse</button></td>
                 </tr>
             </tbody>
         </table>
-        <button class="btn btn-two" @click="addTran">Aggiungi</button>
+        <button class="btn btn-two" @click="addTran">Add</button>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import { getUser } from '../assets/utils.js';
 
 export default {
     data() {
@@ -114,10 +115,9 @@ export default {
                 this.transactions = response.data;
 
                 this.transactions.forEach((tran) => {
-                    tran.data = new Date(tran.data).toISOString().split('T')[0];
+                    tran.date = new Date(tran.date).toISOString().split('T')[0];
                 });
 
-                console.log(this.transactions);
             } catch (err) {
                 console.log(err);
             }
@@ -130,7 +130,7 @@ export default {
 
                 this.transactions = response.data;
                 this.transactions.forEach((tran) => {
-                    tran.data = new Date(tran.data).toISOString().split('T')[0];
+                    tran.date = new Date(tran.date).toISOString().split('T')[0];
                 });
             }catch(err){
                 console.log(err);
@@ -141,10 +141,9 @@ export default {
                 const response = await axios.get(`api/budget/${this.year}/${this.month}`, {
                     withCredentials: true, // Include credentials (cookies) in the request
                 });
-                console.log(response.data);
                 this.transactions = response.data;
                 this.transactions.forEach((tran) => {
-                    tran.data = new Date(tran.data).toISOString().split('T')[0];
+                    tran.date = new Date(tran.date).toISOString().split('T')[0];
                 });
             }catch(err){
                 console.log(err);
@@ -158,7 +157,7 @@ export default {
 
                 this.transactions = [tran];
                 this.transactions.forEach((tran) => {
-                    tran.data = new Date(tran.data).toISOString().split('T')[0];
+                    tran.date = new Date(tran.date).toISOString().split('T')[0];
                 });
                 this.filteredItems=[];
             }catch(err){
@@ -168,9 +167,6 @@ export default {
         },
         async modifyById(id) {
             try{
-                const tran = this.transactions.find((tran) => tran._id === id);
-                console.log(tran.costo);
-
                 this.$router.push('/BudgetPage/UpdateTransaction/' + id);
             }catch(err){
                     console.log(err);
@@ -188,12 +184,11 @@ export default {
         async deleteById(id) {
             try{
                 const tran = this.transactions.find((tran) => tran._id === id);
-                tran.year = new Date(tran.data).getFullYear();
-                tran.month = new Date(tran.data).getMonth() + 1;
-                const response = await axios.delete(`api/budget/${tran.year}/${tran.month}/${id}`, {
+                tran.year = new Date(tran.date).getFullYear();
+                tran.month = new Date(tran.date).getMonth() + 1;
+                await axios.delete(`api/budget/${tran.year}/${tran.month}/${id}`, {
                     withCredentials: true,
                 });
-                console.log(response.data);
                 this.getTransactions();
             }catch(err){
                     console.log(err);
@@ -201,14 +196,11 @@ export default {
         },
         async isLogged() {
             try{
-                const response = await axios.get('/api/budget/whoami', {
-                    withCredentials: true, // Include credentials (cookies) in the request
-                });
-                console.log(response.data);
-                if (!response.data) {
+                const user= await getUser();
+                if (!user) {
                     this.$router.push('/LoginForm');
                 } else {
-                    this.user = response.data.username;
+                    this.user = user.username;
                 }
             }catch(err){
                     console.log(err);
@@ -232,7 +224,6 @@ export default {
                 const response = await axios.get(`/api/budget/search?q=${this.query}`, {
                     withCredentials: true, // Include credentials (cookies) in the request
                 });
-                console.log(response.data);
                 this.filteredItems = response.data;
             }catch(err){
                     console.log(err);
@@ -242,8 +233,8 @@ export default {
 };
 </script>
 
-<style scoped lang ="scss">
-@import '../assets/style.scss';
+<style scoped >
+@import '../assets/style.css';
 
 .row {
     margin-bottom: 10px;
@@ -259,5 +250,57 @@ export default {
 
 .btn {
     margin-right: 5px;
+}
+
+
+.table{
+    background-color: #b39b4d45;
+}
+.btn-two{
+    background-color: #607744;
+    border-color: #607744;
+    color: #FFFFFF;
+}
+.btn-two:hover{
+    background-color: #768948;
+    border-color: #768948;
+}
+table td{
+    background-color: transparent;
+}
+table th{
+    background-color: transparent;
+}
+tr:nth-child(even) {
+    background-color: #b39b4d37;
+}
+
+.nav-link:hover{
+    cursor: pointer;
+    background-color: #607744;
+}
+h1{
+    font-weight: 500;
+}
+
+.dropdown-menu{
+    background-color: #1e2f23;
+}
+.dropdown-item{
+    color: #FFFFFF;
+}
+.dropdown-item:active{
+    color: #FFFFFF;
+    background-color: #607744;
+}
+.tableth{
+    background-color: #1e2f23;
+}
+
+.tablethcol {
+    color: #FFFFFF;
+}
+.table{
+    border-color: #1e2f23;
 }
 </style>

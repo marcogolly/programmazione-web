@@ -9,7 +9,7 @@ export async function getUser() {
             return null;
         }
         else{
-            return response.data.name;
+            return response.data;
         }
     }catch(err){
         console.log(err);
@@ -21,21 +21,15 @@ export async function getUser() {
 export async function formatTransaction(tran) {
     try{
         let newTransaction = {...tran};
-        newTransaction.users = {};
-        console.log("porca madonna");
-        tran.users.forEach(user => {
-            newTransaction.users[user.name] = user.quota;
-        });
-        
-        newTransaction.costo=parseInt(newTransaction.costo);            
-        newTransaction.data=new Date(newTransaction.data);
+        newTransaction.users = [];
+
+        newTransaction.cost=parseInt(newTransaction.cost);            
+        newTransaction.date=new Date(newTransaction.date);
         
         newTransaction.users = tran.users.reduce((acc, item) => {
             acc[item.name] = parseInt(item.quota, 10);
             return acc;
         }, {});
-        console.log(newTransaction.users);
-        
         
 
         return newTransaction;

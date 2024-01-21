@@ -7,16 +7,19 @@
           <a class="nav-link px-2 text-white">Home</a>
         </li>
         <li class="nav-link px-6 text-white p-4" @click="navigateTo('/LoginForm')">
-          <a class="nav-link px-2 text-white">Accedi</a>
+          <a class="nav-link px-2 text-white">Login</a>
         </li>
         <li class="nav-link px-6 text-white p-4" @click="navigateTo('/RegisterForm')">
-          <a class="nav-link px-2 text-white">Registrati</a>
+          <a class="nav-link px-2 text-white">Register</a>
         </li>
         <li class="nav-link px-6 text-white p-4" @click="navigateTo('/BudgetPage')">
           <a class="nav-link px-2 text-white">Budget</a>
         </li>
         <li class="nav-link px-6 text-white p-4" @click="navigateTo('/BalancePage')">
           <a class="nav-link px-2 text-white">Balance</a>
+        </li>
+        <li class="nav-link px-6 text-white p-4" @click="navigateTo('/AboutPage')">
+          <a class="nav-link px-2 text-white">About</a>
         </li>
 
       </ul>
@@ -59,11 +62,10 @@ export default {
 };
 </script>
 
-<style lang='scss'>
-@import 'assets/style.scss';
+<style>
+@import './assets/style.css';
 .mb-auto{
   background-color: #1e2f23;
 }
-
 
 </style>

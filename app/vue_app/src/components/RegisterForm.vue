@@ -3,7 +3,7 @@
         
         <div class="jumbotron">
             
-            <h1 class="mt-4">Registrati</h1>
+            <h1 class="mt-4">Register</h1>
             <form @submit.prevent="registerUser" >
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="username" v-model="username" required>
@@ -11,22 +11,22 @@
                 </div>
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="name" v-model="name" required>
-                    <label for="name">Nome</label>
+                    <label for="name">Name</label>
                 </div>
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="surname" v-model="surname" required>
-                    <label for="surname">Cognome</label>
+                    <label for="surname">Surname</label>
                 </div>
                 <div class="form-floating mb-3">
                     <input type="password" class="form-control" id="password" v-model="password" required>
                     <label for="password">Password</label>
                 </div>
-                <button class="btn btn-one w-100 py-2" type="submit">Registrati</button>
+                <button class="btn btn-one w-100 py-2" type="submit">Register</button>
             </form>
         </div>
 
         <div class="registration-status"> 
-            <p class="text-danger"> {{ errore }} </p>  
+            <p class="text-danger"> {{ error }} </p>  
         </div>
     </main>
 </template>
@@ -41,7 +41,7 @@ export default {
             name: '',
             surname: '',
             password: '',
-            errore: '',
+            error: '',
         }
     },
     
@@ -57,14 +57,13 @@ export default {
                     withCredentials: true, // Include credentials (cookies) in the request
                 })
                 .then(
-                    res=> {
-                        console.log(res.data);
+                    ()=> {
                         this.$router.push('/LoginForm');
                     }
                     )
-                    .catch (error=> { 
-                    console.log(error);
-                    this.errore =error.response.data;
+                    .catch (err=> { 
+                    console.log(err);
+                    this.error =err.response.data;
                 });
             }catch(err){
             console.log(err);
@@ -74,6 +73,6 @@ export default {
 }
 </script>
 
-<style scoped lang ="scss">
-@import '../assets/style.scss';
+<style scoped >
+@import '../assets/style.css';
 </style>

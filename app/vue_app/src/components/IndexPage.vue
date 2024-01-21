@@ -1,25 +1,24 @@
 <template>
     <div class="container">
         <div class="jumbotron">
-            <h1 v-if="!user" class="display-4">Benvenuto nell'app!</h1>
-            <h1 v-if="user" class="display-4">Bentornato, {{ user }}!</h1>
+            <h1 v-if="!user" class="mt-4">Welcome to the app!</h1>
+            <h1 v-if="user" class="mt-4">Welcome back, {{ user }}!</h1>
 
             <p class="lead">
-                Questa web app ti permette di gestire le tue spese e registrare transazioni
+                This web app allows you to manage your expenses and record transactions.
             </p>
 
             <div class="d-flex justify-content-center">
                 <router-link to="/LoginForm" class="btn btn-one me-2">
-                    Clicca qui per effettuare il login
+                    Click here to login
                 </router-link>
                 <router-link to="/RegisterForm" class="btn btn-outline-two">
-                    Clicca qui per registrarti
+                    Click here to register
                 </router-link>
             </div>
             
             <p class="lead py-4">
-                Dopo aver effettuato il login, puoi utilizzare la pagina Balance per visualizzare i tuoi crediti e debiti con gli altri utenti. Inoltre, puoi utilizzare la
-                la pagina Budget per registrare transazioni e visualizzare le tue spese
+                After logging in, you can use the Balance page to view your credits and debts with other users. Additionally, you can use the Budget page to record transactions and track your expenses.
             </p>
             <div class="d-flex justify-content-center">
                 <router-link to="/BudgetPage" class="btn btn-one me-2" type="button">
@@ -30,7 +29,7 @@
                 </router-link>
             </div>
             <p class="lead">
-                Per navigare tra le varie pagine puoi utilizzare la navbar in alto
+                You can navigate between pages using the top navbar.
             </p>
         </div>
     </div>
@@ -51,7 +50,8 @@ export default {
     methods: {
         async getLoggedUser() {
             try{
-                this.user = await getUser();
+                const user = await getUser();
+                this.user = user.name;
             }catch(err){
                 console.log(err);
             }
@@ -60,6 +60,7 @@ export default {
 }
 </script>
 
-<style scoped lang ="scss">
-@import '../assets/style.scss';
+<style >
+@import '../assets/style.css';
+
 </style>

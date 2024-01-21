@@ -1,41 +1,34 @@
-$one: #1e2f23;
-$two: #34623f;
-$three: #607744;
-$four: #768948;
-$five: #b39b4d45;
-$six: #b39b4d37;
-$seven: #b39b4d;
 
 .jumbotron {
     margin-top: 50px;
     padding: 30px;
-    background-color: $five;
+    background-color: #b39b4d45;
     border-radius: 5px;
 }
 
 .btn-one, .btn-one:active{
-    background-color: $one;
-    border-color: $one;
+    background-color: #1e2f23;
+    border-color: #1e2f23;
     color: white;
 }
 .btn, .btn:active{
-    background-color: $one;
-    border-color: $one;
+    background-color: #1e2f23;
+    border-color: #1e2f23;
 }
 .btn-one:hover {
-    background-color: $three;
-    border-color: $one;
+    background-color: #607744;
+    border-color: #1e2f23;
     color: #FFFFFF;
 
 }
 .btn-outline-two{
-    background-color: $three;
-    border-color: $three;
+    background-color: #607744;
+    border-color: #607744;
     color: #FFFFFF;
 }
 .btn-outline-two:hover{
-    background-color: $four;
-    border-color: $three;
+    background-color: #768948;
+    border-color: #607744;
     color: #FFFFFF;
 }
 .form-signin {
@@ -47,16 +40,16 @@ $seven: #b39b4d;
 
 
 .table{
-    background-color: $five;
+    background-color: #b39b4d45;
 }
 .btn-two{
-    background-color: $three;
-    border-color: $three;
+    background-color: #607744;
+    border-color: #607744;
     color: #FFFFFF;
 }
 .btn-two:hover{
-    background-color: $four;
-    border-color: $four;
+    background-color: #768948;
+    border-color: #768948;
 }
 table td{
     background-color: transparent;
@@ -65,36 +58,34 @@ table th{
     background-color: transparent;
 }
 tr:nth-child(even) {
-    background-color: $six;
+    background-color: #b39b4d37;
 }
-
-
 
 .nav-link:hover{
     cursor: pointer;
-    background-color: $three;
+    background-color: #607744;
 }
 h1{
     font-weight: 500;
 }
 
 .dropdown-menu{
-    background-color: $one;
+    background-color: #1e2f23;
 }
 .dropdown-item{
     color: #FFFFFF;
 }
 .dropdown-item:active{
     color: #FFFFFF;
-    background-color: $three;
+    background-color: #607744;
 }
 .tableth{
-    background-color: $one;
+    background-color: #1e2f23;
 }
 
 .tablethcol {
     color: #FFFFFF;
 }
 .table{
-    border-color: $one;
+    border-color: #1e2f23;
 }

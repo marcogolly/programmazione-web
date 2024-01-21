@@ -2,26 +2,26 @@
     <div class="container">
         <div class="jumbotron">
             <form @submit.prevent="addTransaction">
-                <h1 class="mt-4">Aggiungi spesa</h1>
+                <h1 class="mt-4">Add Expense</h1>
                 <div class="form-floating mb-3">
-                    <input id="data" v-model="transaction.data" type="date" class="form-control" />
-                    <label for="data">Data</label>
+                    <input id="date" v-model="transaction.date" type="date" class="form-control" />
+                    <label for="date">Date</label>
                 </div>
                 <div class="form-floating mb-3">
                     <input id="desc" v-model="transaction.desc" class="form-control" />
-                    <label for="desc">Descrizione</label>
+                    <label for="desc">Description</label>
                 </div>
                 <div class="form-floating mb-3">
                     <input id="cat" v-model="transaction.cat" class="form-control" />
-                    <label for="cat">Categoria</label>
+                    <label for="cat">Category</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input id="costo" v-model="transaction.costo" class="form-control" />
-                    <label for="costo">Costo</label>
+                    <input id="cost" v-model="transaction.cost" @blur="updateCost()" class="form-control" />
+                    <label for="cost">Cost</label>
                 </div>
                 <hr class="my-4"> <!-- Add separator here with Bootstrap class -->
                 <div class="form-group">
-                    <label for="users">Utenti</label>
+                    <label for="users">Users</label>
                     <div v-for="(user, index) in transaction.users" :key="index" class="row">
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
@@ -45,12 +45,12 @@
                     </div>
                 </div>
                 <div class="mb-3 p-3 ">
-                    <button type="button" @click="addUser" class="btn btn-one px-2 ">Aggiungi utente</button>
-                    <button type="button" @click="removeUser" class="btn btn-one px-2">Rimuovi utente</button>
+                    <button type="button" @click="addUser" class="btn btn-one px-2 ">Add User</button>
+                    <button type="button" @click="removeUser" class="btn btn-one px-2">Remove User</button>
                 </div>
                 <br>
-                <button type="submit" class="btn btn-two">Conferma</button>
-                <p class="text-danger"> {{ errore }} </p>  
+                <button type="submit" class="btn btn-two">Confirm</button>
+                <p class="text-danger"> {{ error }} </p>  
             </form>
         </div>
     </div>
@@ -60,7 +60,7 @@
 
 <script>
 import axios from 'axios';
-import {formatTransaction} from '../assets/utils.js';
+import {formatTransaction, getUser} from '../assets/utils.js';
 export default {
     name: 'AddTransaction',
     data() {
@@ -68,35 +68,33 @@ export default {
             transaction: {
                 desc: '',
                 cat: '',
-                costo: '',
+                cost: '',
                 //TODO default user with max cost
-                users: [{name: '', quota: ''}],
+                users: [],
             },
-            errore: '',
+            error: '',
             filteredItems: [],
         };
     },
     mounted() {
-        this.addUser();
-        //TODO CHECK LOG IN
+        this.isLogged();
     },
     methods: {
         async addTransaction() {
             try {
                 let newTransaction = await formatTransaction(this.transaction);
+
+                const year = newTransaction.date.getFullYear();
+                const month = newTransaction.date.getMonth() + 1;
+                
                 console.log(newTransaction);
-
-                const year = newTransaction.data.getFullYear();
-                const month = newTransaction.data.getMonth() + 1;
-
-                const response = await axios.post(`api/budget/${year}/${month}`, newTransaction, {
+                await axios.post(`api/budget/${year}/${month}`, newTransaction, {
                     withCredentials: true,
                 });
-                console.log(response.data);
                 this.$router.push('/BudgetPage');
             } catch (error) {
                 console.error(error);
-                this.errore = error.response.data;
+                this.error = error.response.data;
             }
         },
 
@@ -124,14 +122,30 @@ export default {
             }catch(err){
                 console.log(err);
             }
+        },
+        async isLogged() {
+            try{
+                const user= await getUser();
+                if (!user) {
+                    this.$router.push('/LoginForm');
+                } else {
+                    this.transaction.users.push({name: user.username, quota: ''});
+                }
+            }catch(err){
+                    console.log(err);
+                }
+        },
+        updateCost() {
+            if(this.transaction.users.length===1 && !this.transaction.users[0].quota){
+                this.transaction.users[0].quota = this.transaction.cost;
+            }
         }
-
     },
 }; 
 </script>
 
-<style scoped lang ="scss">
-@import '../assets/style.scss';
+<style>
+@import '../assets/style.css';
 .container{
     width: 70%;
 }

@@ -1,11 +1,11 @@
 <template>
     <div class="jumbotron">
-        <h1 class="mt-4">Bilancio</h1>
+        <h1 class="mt-4">Balance</h1>
         <div >
             <div class="col-md">
                 <div class="form-floating mb-3">
                     <input type="text" id="query" v-model="query" @keyup="autocomplete" class="form-control" />
-                    <label for="query">Cerca utente </label>
+                    <label for="query">Search user</label>
                 </div>
                 <ul v-if="filteredItems.length > 0" class="dropdown-menu position-absolute d-grid gap-1 p-2 rounded-3 mx-0 shadow w-220px">
                     <li v-for="item in filteredItems" :key="item.username" @click="balanceById(item.username)">
@@ -20,16 +20,16 @@
         <table class="table">
             <thead>
                 <tr class="tableth">
-                    <th class="tablethcol">Data</th>
-                    <th class="tablethcol">Descrizione</th>
-                    <th class="tablethcol">Categoria</th>
-                    <th class="tablethcol">Attivo</th>
-                    <th class="tablethcol">Passivo</th>
+                    <th class="tablethcol">Date</th>
+                    <th class="tablethcol">Description</th>
+                    <th class="tablethcol">Category</th>
+                    <th class="tablethcol">Debit</th>
+                    <th class="tablethcol">Credit</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="tran in transactions" :key="tran.id">
-                    <td>{{ tran.data }}</td>
+                    <td>{{ tran.date }}</td>
                     <td>{{ tran.desc }}</td>
                     <td>{{ tran.cat }}</td>
                     <td>{{ tran.dare }}</td>
@@ -38,7 +38,7 @@
                     
                 <tr>
                     
-                    <td      colspan="4" style="text-align: right;"><strong>Totale:</strong></td>
+                    <td      colspan="4" style="text-align: right;"><strong>Total:</strong></td>
                     <td>{{ calculateTotal() }}</td>
                 </tr>
             </tbody>
@@ -48,6 +48,7 @@
 
 <script>
 import axios from 'axios';
+import { getUser } from '../assets/utils.js';
 
 export default {
     data() {
@@ -75,7 +76,7 @@ export default {
                 this.transactions = response.data;
 
                 this.transactions.forEach((tran) => {
-                    tran.data = new Date(tran.data).toISOString().split('T')[0];
+                    tran.date = new Date(tran.date).toISOString().split('T')[0];
                 });
             } catch (err) {
                 console.log(err);
@@ -84,14 +85,11 @@ export default {
 
         async isLogged() {
             try{
-                const response = await axios.get('/api/budget/whoami', {
-                    withCredentials: true, // Include credentials (cookies) in the request
-                });
-                console.log(response.data);
-                if (!response.data) {
+                const user= await getUser();
+                if (!user) {
                     this.$router.push('/LoginForm');
                 } else {
-                    this.user = response.data.username;
+                    this.user = user.username;
                 }
             }catch(err){
                 console.log(err);
@@ -105,9 +103,8 @@ export default {
                 this.transactions = response.data;
 
                 this.transactions.forEach((tran) => {
-                        tran.data = new Date(tran.data).toISOString().split('T')[0];
+                        tran.date = new Date(tran.date).toISOString().split('T')[0];
                     });
-                console.log(this.transactions);
             }catch(err){
             console.log(err);
         }
@@ -119,7 +116,6 @@ export default {
                 });
 
                 this.filteredItems = response.data;
-                console.log(this.filteredItems);
             }catch(err){
                 console.log(err);
             }
@@ -133,7 +129,7 @@ export default {
                 this.transactions = response.data;
 
                 this.transactions.forEach((tran) => {
-                        tran.data = new Date(tran.data).toISOString().split('T')[0];
+                        tran.date = new Date(tran.date).toISOString().split('T')[0];
                     });
                 this.filteredItems=[];
             }catch(err){
@@ -160,10 +156,60 @@ export default {
 };
 </script>
 
-<style scoped lang ="scss">
-@import '../assets/style.scss';
+<style scoped >
+@import '../assets/style.css';
 
 .dropdown-menu {
     display: block;
+}
+.table{
+    background-color: #b39b4d45;
+}
+.btn-two{
+    background-color: #607744;
+    border-color: #607744;
+    color: #FFFFFF;
+}
+.btn-two:hover{
+    background-color: #768948;
+    border-color: #768948;
+}
+table td{
+    background-color: transparent;
+}
+table th{
+    background-color: transparent;
+}
+tr:nth-child(even) {
+    background-color: #b39b4d37;
+}
+
+.nav-link:hover{
+    cursor: pointer;
+    background-color: #607744;
+}
+h1{
+    font-weight: 500;
+}
+
+.dropdown-menu{
+    background-color: #1e2f23;
+}
+.dropdown-item{
+    color: #FFFFFF;
+}
+.dropdown-item:active{
+    color: #FFFFFF;
+    background-color: #607744;
+}
+.tableth{
+    background-color: #1e2f23;
+}
+
+.tablethcol {
+    color: #FFFFFF;
+}
+.table{
+    border-color: #1e2f23;
 }
 </style>

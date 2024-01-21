@@ -117,7 +117,7 @@ app.get('/api/budget', verify, async (req, res) => {
         const username = req.session.user.username;
         const transactions = await collection.find({
             [`users.${username}`]: { $exists: true },
-            costo:{ $ne: 0 }
+            cost:{ $ne: 0 }
         }).toArray();
             
         res.json(transactions);
@@ -140,8 +140,8 @@ app.get('/api/budget/:year/:month', verify, async (req, res) => {
 
         const transactions = await collection.find({
             [`users.${username}`]: { $exists: true },
-            data: { $gte: start, $lt: end },
-            costo:{ $ne: 0 }
+            date: { $gte: start, $lt: end },
+            cost:{ $ne: 0 }
         }).toArray();
 
         res.json(transactions);
@@ -175,14 +175,14 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
         const collection = db.collection('transactions');
         const transaction = {
             desc: req.body.desc,
-            data: new Date(req.body.data),
-            costo: parseInt(req.body.costo),
+            date: new Date(req.body.date),
+            cost: parseInt(req.body.cost),
             cat: req.body.cat,
             users: req.body.users,
             user: req.session.user.username,
         };
         
-        if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === '' || transaction.user===''){
+        if(transaction.desc === '' || transaction.date === '' || transaction.cost === '' || transaction.cat === '' || transaction.user===''){
             throw new Error('Compila tutti i campi');
         }
         else if(transaction.users.length === 0){
@@ -191,9 +191,8 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
         else if (Object.values(transaction.users).some(quota => quota === 0)) {
             throw new Error('La quota di ogni utente deve essere diversa da 0');
         }
-        else if (Object.values(transaction.users).reduce((acc, quota) => acc + quota, 0) !== transaction.costo) {
-            console.log(transaction.users);
-            throw new Error('La somma delle quote degli utenti deve essere uguale al costo');
+        else if (Object.values(transaction.users).reduce((acc, quota) => acc + quota, 0) !== transaction.cost) {
+            throw new Error('La somma delle quote degli utenti deve essere uguale al cost');
         }
         else{
             await collection.insertOne(transaction);
@@ -212,14 +211,14 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
         const collection = db.collection('transactions');
         let transaction = {
             desc: req.body.desc,
-            data: new Date(req.body.data),
-            costo: parseInt(req.body.costo),
+            date: new Date(req.body.date),
+            cost: parseInt(req.body.cost),
             cat: req.body.cat,
             users: req.body.users,
             user: req.session.user.username,
         }
     
-        if(transaction.desc === '' || transaction.data === '' || transaction.costo === '' || transaction.cat === ''){
+        if(transaction.desc === '' || transaction.date === '' || transaction.cost === '' || transaction.cat === ''){
             throw new Error('Compila tutti i campi');
         }
         else if(transaction.users.length === 0){
@@ -228,9 +227,8 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
         else if (Object.values(transaction.users).some(quota => quota === 0)) {
             throw new Error('La quota di ogni utente deve essere diversa da 0');
         }
-        else if (Object.values(transaction.users).reduce((acc, quota) => acc + quota, 0) !== transaction.costo) {
-            console.log(transaction.users);
-            throw new Error('La somma delle quote degli utenti deve essere uguale al costo');
+        else if (Object.values(transaction.users).reduce((acc, quota) => acc + quota, 0) !== transaction.cost) {
+            throw new Error('La somma delle quote degli utenti deve essere uguale al cost');
         }
         else{
             await collection.updateOne(
@@ -274,7 +272,7 @@ app.get('/api/balance', verify, async (req, res) => {
 
         transactions.forEach(tran => {
             if(tran.user ===username){
-                    tran.dare =Math.abs(tran.costo-tran.users[username]);
+                    tran.dare =Math.abs(tran.cost-tran.users[username]);
                     tran.avere = null;
             }
             else{
@@ -330,11 +328,11 @@ app.get('/api/budget/search', verify, async (req, res) => {
         const username = req.session.user.username;
         const transactions = await collection.find({
             [`users.${username}`]: { $exists: true },
-            costo:{ $ne: 0 },
+            cost:{ $ne: 0 },
             $or: [
                 { desc: { $regex: req.query.q, $options: 'i' } },
                 { cat: { $regex: req.query.q, $options: 'i' } },
-                { data: { $regex: req.query.q, $options: 'i' } },
+                { date: { $regex: req.query.q, $options: 'i' } },
             ]
         }).toArray();
 
@@ -359,8 +357,8 @@ app.get('/api/budget/:year', verify, async (req, res) => {
 
         const transactions = await collection.find({
             [`users.${username}`]: { $exists: true },
-            data: { $gte: start, $lt: end },
-            costo:{ $ne: 0 }
+            date: { $gte: start, $lt: end },
+            cost:{ $ne: 0 }
         }).toArray();
 
         res.json(transactions);
