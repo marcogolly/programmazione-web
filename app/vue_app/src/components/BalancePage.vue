@@ -39,9 +39,9 @@
                 <tr>
                     
                     <td v-if="calculateTotal() >0" colspan="4" style="text-align: right;"><strong>Total:</strong></td>
-                    <td v-if="calculateTotal() <0" colspan="3" style="text-align: right;"><strong>Total:</strong></td>
+                    <td v-if="calculateTotal() <=0" colspan="3" style="text-align: right;"><strong>Total:</strong></td>
                     <td> <strong>{{ Math.abs(calculateTotal()) }}</strong></td>
-                    <td v-if="calculateTotal() <0"></td>
+                    <td v-if="calculateTotal() <=0"></td>
                 </tr>
             </tbody>
         </table>

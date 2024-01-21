@@ -15,6 +15,7 @@
             </form>
             <p class="text-danger"> {{ error }} </p>  
         </div>
+        note: to test the project you can log in with the <strong> user "user1" </strong> with <strong> password "asd"</strong>, that already contains some transactions
     </main>
 </template>
 

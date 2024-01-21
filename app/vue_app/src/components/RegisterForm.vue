@@ -53,8 +53,6 @@ export default {
                         name: this.name,
                         surname: this.surname,
                         password: this.password
-                },{
-                    withCredentials: true,  
                 })
                 .then(
                     ()=> {

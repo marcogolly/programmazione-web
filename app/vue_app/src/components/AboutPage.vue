@@ -24,7 +24,6 @@
 
                 This means that the balance is calculated as the sum of the differences between "cost" and their "quota" of their transactions and the sum of their quota of other users' transactions <br>
 
-                If the balance is positive, the user has a debit and must refound the money to the other users, if the balance is negative, the user has a credit and must receive the money from the other users <br>
             </p>
         </div>
     </div>

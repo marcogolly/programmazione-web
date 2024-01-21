@@ -1,24 +1,25 @@
 <template>
     <div class="jumbotron">
         <h1 class="mt-4">Expenses</h1>
-        <button class="btn btn-two" @click="showFilterDate()"> Filter by date </button>
-        <button class="btn btn-two" @click="showFilterTran()"> Search a transaction </button>
-        <div class="row g-3" v-if="filterDate">
-            <div class ="col md-2"> 
+        <div class="p-3">
+            <button class="btn btn-two" @click="showFilterDate()"> Filter by date </button>
+            <button class="btn btn-two" @click="showFilterTran()"> Search a transaction </button>
+        </div>
+        <div class="row g-3 md-10" v-if="filterDate">
+            <div class="col-md-2">
                 <label for="year">Select Year:</label>
-                <select v-model="year" id="year" name="year" class="form-select" @change="byYearMonth()">
-                    <!-- Use v-for to dynamically generate the year options -->
+                <select v-model="year" id="year" name="year" class="form-select" @change="byYearMonth()" style="width: 80%;">
                     <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
                 </select>
             </div>
-            <div class="col md-4">
+            <div class="col-md-2">
                 <label for="month">Select Month:</label>
-                <select v-model="month" id="month" name="month" class="form-select" @change="byYearMonth()">
+                <select v-model="month" id="month" name="month" class="form-select" @change="byYearMonth()" style="width: 80%;">
                     <option v-for="month in months" :key="month.value" :value="month.value">{{ month.label }}</option>
                 </select>
             </div>
-            
         </div>
+
         <div class="row g-3" v-if="filterTran">
             <div class="col-md-4">
                 <div class="form-floating mb-3 dropdown position-relative">
@@ -151,7 +152,7 @@ export default {
         async byYearMonth() {
             try{
                 
-                if (this.month ==='' || this.year ==''){
+                if (this.month ==='' || this.year ==='' || this.year==='---'){
                     this.byYear();
                     return;
                 }
