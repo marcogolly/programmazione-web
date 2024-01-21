@@ -9,12 +9,12 @@
                 All the expenses are stored in a mongoDB database, and the data is fetched using a REST API <br>
 
                 The frontend is made using Vue.js, and the backend is made using Node.js and Express.js <br>
-
+</p>    </div>  
+<div class="jumbotron">
                 
-            </p>
-            <h3 class="mt-4">
-                My assumptions
-            </h3>
+            <h2 class="mt-4">
+                How to use this website and personal assumptions
+            </h2>
             <p class="lead">
                 All the expenses contains an extra field "user", which is the user that created the expense <br>
 
@@ -22,7 +22,9 @@
 
                 In order to show the balance, we assume that if a user registers a transaction (with cost != 0) they sustain the cost, then each user that has a quota must refound their money to them as described in the project document  <br>
 
-                This means that the balance is calculated as the sum of the differences between "cost" and their "quota" <br>
+                This means that the balance is calculated as the sum of the differences between "cost" and their "quota" of their transactions and the sum of their quota of other users' transactions <br>
+
+                If the balance is positive, the user has a debit and must refound the money to the other users, if the balance is negative, the user has a credit and must receive the money from the other users <br>
             </p>
         </div>
     </div>
@@ -31,5 +33,7 @@
 
 <style >
 @import '../assets/style.css';
-
+p.lead{
+    font-weight: 400;
+}
 </style>

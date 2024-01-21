@@ -3,7 +3,7 @@
     margin-top: 50px;
     padding: 30px;
     background-color: #b39b4d45;
-    border-radius: 5px;
+    border-radius: 15px; /* Updated border-radius value */
 }
 
 .btn-one, .btn-one:active{
@@ -41,6 +41,7 @@
 
 .table{
     background-color: #b39b4d45;
+    border-radius: 15px;
 }
 .btn-two{
     background-color: #607744;

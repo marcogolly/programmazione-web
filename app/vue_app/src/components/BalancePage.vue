@@ -23,8 +23,8 @@
                     <th class="tablethcol">Date</th>
                     <th class="tablethcol">Description</th>
                     <th class="tablethcol">Category</th>
-                    <th class="tablethcol">Debit</th>
                     <th class="tablethcol">Credit</th>
+                    <th class="tablethcol">Debit</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,8 +38,10 @@
                     
                 <tr>
                     
-                    <td      colspan="4" style="text-align: right;"><strong>Total:</strong></td>
-                    <td>{{ calculateTotal() }}</td>
+                    <td v-if="calculateTotal() >0" colspan="4" style="text-align: right;"><strong>Total:</strong></td>
+                    <td v-if="calculateTotal() <0" colspan="3" style="text-align: right;"><strong>Total:</strong></td>
+                    <td> <strong>{{ Math.abs(calculateTotal()) }}</strong></td>
+                    <td v-if="calculateTotal() <0"></td>
                 </tr>
             </tbody>
         </table>
@@ -70,7 +72,7 @@ export default {
         async getTransactions() {
             try {
                 const response = await axios.get('api/balance', {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
 
                 this.transactions = response.data;
@@ -98,7 +100,7 @@ export default {
         async byUser() {
             try{
                 const response = await axios.get(`api/balance/${this.user}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
                 this.transactions = response.data;
 
@@ -112,7 +114,7 @@ export default {
         async autocomplete() {
             try{
                 const response = await axios.get(`api/users/search?q=${this.query}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
 
                 this.filteredItems = response.data;
@@ -123,7 +125,7 @@ export default {
         async balanceById(id) {
             try{
                 const response = await axios.get(`api/balance/${id}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
 
                 this.transactions = response.data;
@@ -148,8 +150,8 @@ export default {
                     }
                 });
                 return total;
-            }catch(err){
-                console.log(err);
+            }catch(err){     
+                //ignore          
             }
         }
     },
@@ -164,6 +166,7 @@ export default {
 }
 .table{
     background-color: #b39b4d45;
+    border-color: #1e2f23;
 }
 .btn-two{
     background-color: #607744;
@@ -208,8 +211,5 @@ h1{
 
 .tablethcol {
     color: #FFFFFF;
-}
-.table{
-    border-color: #1e2f23;
 }
 </style>

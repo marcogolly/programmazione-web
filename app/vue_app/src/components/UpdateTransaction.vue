@@ -88,7 +88,7 @@ export default {
                 const year = this.$route.params.year;
                 const month = this.$route.params.month;
                 const response = await axios.get(`api/budget/${year}/${month}/${id}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
                 this.transaction = response.data[0];
 
@@ -110,7 +110,7 @@ export default {
                 const month = updatedTransaction.date.getMonth() + 1;
 
                 await axios.put(`api/budget/${year}/${month}/${id}`, updatedTransaction, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
 
                 this.$router.push('/BudgetPage');
@@ -128,7 +128,7 @@ export default {
         async autocomplete(i) {
             try{
                 const response = await axios.get(`api/users/search?q=${this.transaction.users[i].name}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
                 this.filteredItems[i] = response.data;
             }catch(err){

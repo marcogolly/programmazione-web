@@ -3,7 +3,7 @@ import axios from 'axios';
 export async function getUser() {
     try{
         const response = await axios.get('/api/budget/whoami', {
-            withCredentials: true, // Include credentials (cookies) in the request
+            withCredentials: true,  
         });
         if (!response.data) {
             return null;

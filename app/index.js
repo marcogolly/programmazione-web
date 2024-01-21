@@ -77,6 +77,7 @@ app.post('/api/auth/signin', async (req, res) => {
 });
 
 // User sign up
+// Error message
 app.post('/api/auth/signup', async (req, res) => {
     const db = await connectToDatabase();
     const collection = db.collection('users');
@@ -105,7 +106,7 @@ app.post('/api/auth/signup', async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        res.status(403).send(err.data || 'Errore');
+        res.status(403).send(err.message || 'Errore');
     }
 });
 
@@ -192,7 +193,7 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
             throw new Error('La quota di ogni utente deve essere diversa da 0');
         }
         else if (Object.values(transaction.users).reduce((acc, quota) => acc + quota, 0) !== transaction.cost) {
-            throw new Error('La somma delle quote degli utenti deve essere uguale al cost');
+            throw new Error('La somma delle quote degli utenti deve essere uguale al costo totale');
         }
         else{
             await collection.insertOne(transaction);
@@ -200,7 +201,7 @@ app.post('/api/budget/:year/:month', verify, async (req, res) => {
         }
     }catch(err){
         console.log(err);
-        res.status(403).send(err.data || 'Errore');
+        res.status(403).send(err.message || 'Errore');
     }
 });
 
@@ -228,7 +229,7 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
             throw new Error('La quota di ogni utente deve essere diversa da 0');
         }
         else if (Object.values(transaction.users).reduce((acc, quota) => acc + quota, 0) !== transaction.cost) {
-            throw new Error('La somma delle quote degli utenti deve essere uguale al cost');
+            throw new Error('La somma delle quote degli utenti deve essere uguale al costo totale');
         }
         else{
             await collection.updateOne(
@@ -238,7 +239,7 @@ app.put('/api/budget/:year/:month/:id', verify, async (req, res) => {
             res.send('Transaction updated successfully');
         }
     }catch(err){
-        res.status(403).send(err.data || 'Errore');
+        res.status(403).send(err.message || 'Errore');
     }
 });
 

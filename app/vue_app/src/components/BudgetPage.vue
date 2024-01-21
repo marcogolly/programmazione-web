@@ -42,6 +42,7 @@
         <table class="table" >
             <thead>
                 <tr class="tableth">
+                    <th v-if="showDetails" class="tablethcol">User</th>
                     <th v-if="showDetails" class="tablethcol">Id</th>
                     <th class="tablethcol">Date</th>
                     <th class="tablethcol">Description</th>
@@ -58,6 +59,7 @@
             </thead>
             <tbody>
                 <tr v-for="tran in transactions" :key="tran._id">
+                    <td v-if="showDetails">{{ tran.user }} </td>
                     <td v-if="showDetails">{{ tran._id }} </td>
                     <td>{{ tran.date }}</td>
                     <td>{{ tran.desc }}</td>
@@ -109,7 +111,7 @@ export default {
             try {
                 this.showDetails = false;
                 const response = await axios.get('api/budget', {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
 
                 this.transactions = response.data;
@@ -125,7 +127,7 @@ export default {
         async byYear() {
             try{
                 const response = await axios.get(`api/budget/${this.year}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
 
                 this.transactions = response.data;
@@ -139,7 +141,7 @@ export default {
         async byYearMonth() {
             try{
                 const response = await axios.get(`api/budget/${this.year}/${this.month}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
                 this.transactions = response.data;
                 this.transactions.forEach((tran) => {
@@ -222,7 +224,7 @@ export default {
                     
                 }
                 const response = await axios.get(`/api/budget/search?q=${this.query}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
                 this.filteredItems = response.data;
             }catch(err){
@@ -251,10 +253,9 @@ export default {
 .btn {
     margin-right: 5px;
 }
-
-
 .table{
     background-color: #b39b4d45;
+    border-color: #1e2f23;
 }
 .btn-two{
     background-color: #607744;
@@ -299,8 +300,5 @@ h1{
 
 .tablethcol {
     color: #FFFFFF;
-}
-.table{
-    border-color: #1e2f23;
 }
 </style>

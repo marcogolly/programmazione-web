@@ -69,7 +69,6 @@ export default {
                 desc: '',
                 cat: '',
                 cost: '',
-                //TODO default user with max cost
                 users: [],
             },
             error: '',
@@ -108,7 +107,7 @@ export default {
         async autocomplete(i) {
             try{        
                 const response = await axios.get(`api/users/search?q=${this.transaction.users[i].name}`, {
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 });
                 this.filteredItems[i] = response.data;
             }catch(err){

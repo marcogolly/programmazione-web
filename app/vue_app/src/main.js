@@ -11,10 +11,12 @@ import BalancePage from './components/BalancePage.vue';
 import AboutPage from './components/AboutPage.vue';
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 
-import './axios';
+import axios from 'axios'
+
+axios.defaults.baseURL = 'http://localhost:3000'
 
 import 'bootstrap/dist/css/bootstrap.css';
-import './assets/style.css'; // Import the style.css file
+import './assets/style.css';
 
 const routes = [
   { path: '/LoginForm', component: LoginForm },

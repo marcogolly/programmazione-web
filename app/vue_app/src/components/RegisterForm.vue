@@ -54,7 +54,7 @@ export default {
                         surname: this.surname,
                         password: this.password
                 },{
-                    withCredentials: true, // Include credentials (cookies) in the request
+                    withCredentials: true,  
                 })
                 .then(
                     ()=> {
